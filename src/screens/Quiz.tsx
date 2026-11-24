@@ -56,7 +56,7 @@ export default function Quiz() {
   }
 
   return (
-    <div className="screen with-tab">
+    <div className="screen with-tab narrow">
       <PreventTabs on="quiz" />
       {over ? (
         <div className="fade-in" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 28px 0', gap: 10 }}>

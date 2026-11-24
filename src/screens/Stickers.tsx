@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useApp } from '../App'
-import { Icon, TopBar } from '../components/ui'
+import { Icon, TopBar, useDesktop } from '../components/ui'
 import { RECOVERY, stickers } from '../store'
 
 const LEVEL_NAMES = ['불씨', '반짝', '활활', '이글이글', '횃불']
@@ -51,10 +51,13 @@ export default function Stickers() {
   const pct = next ? Math.min(100, ((hours - prevHours) / (next.hours - prevHours)) * 100) : 100
   const leftText = (h: number) => (h < 1 ? `${Math.ceil(h * 60)}분` : h < 48 ? `${Math.ceil(h)}시간` : `${Math.ceil(h / 24)}일`)
   const done = RECOVERY.filter((r) => r.hours <= hours)
+  const desk = useDesktop()
 
   return (
     <div className="screen fade-in">
       <TopBar onBack={() => go('record')} />
+      <div className={desk ? 'desk-grid' : ''} style={desk ? { marginTop: 8 } : undefined}>
+      <div>
       <div className="pad">
         <h1 style={{ fontSize: 32 }}>스티커 {got}장</h1>
         <p style={{ marginTop: 6, fontSize: 15, color: '#5C4636' }}>
@@ -66,7 +69,7 @@ export default function Stickers() {
           )}
         </p>
       </div>
-      <div style={{ position: 'relative', height: 400, margin: '22px 20px 0', background: 'var(--tint)', borderRadius: 32, flex: 'none' }}>
+      <div style={{ position: 'relative', height: desk ? 460 : 400, margin: desk ? '22px 0 0' : '22px 20px 0', background: 'var(--tint)', borderRadius: 32, flex: 'none' }}>
         {list.map((s, i) => {
           const [x, y, r] = SPOTS[i]
           if (!s.got)
@@ -84,10 +87,11 @@ export default function Stickers() {
           )
         })}
       </div>
+      </div>
       {data.profile?.mode !== 'prevent' && (
-        <div className="pad" style={{ paddingTop: 28, paddingBottom: 34 }}>
+        <div className={desk ? '' : 'pad'} style={{ paddingTop: desk ? 110 : 28, paddingBottom: 34 }}>
           <p className="cap">몸이 회복되는 중</p>
-          <p style={{ marginTop: 8, fontSize: 23, fontWeight: 800, lineHeight: 1.4 }}>
+          <p style={{ marginTop: 8, fontSize: desk ? 32 : 23, fontWeight: 800, lineHeight: 1.4 }}>
             {next ? (
               <>
                 {leftText(next.hours - hours)}만 더 버티면
@@ -117,6 +121,7 @@ export default function Stickers() {
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }

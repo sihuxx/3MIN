@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../App'
 import Mascot from '../components/Mascot'
-import { TabBar, Toggle } from '../components/ui'
+import { TabBar, Toggle, useDesktop } from '../components/ui'
 import { dayCount, emptyData, save, won } from '../store'
 import { Pick } from './Onboarding'
 
@@ -11,12 +11,15 @@ export default function My() {
   const [sheet, setSheet] = useState<null | 'mode' | 'cost' | 'reset' | 'school'>(null)
   const [cost, setCost] = useState(String(p ? Math.round(p.weeklyCost / 7) : 0))
   const close = () => setSheet(null)
+  const desk = useDesktop()
   const row = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: 52, fontSize: 16, fontWeight: 600 } as const
   const plain = { border: 'none', background: 'transparent', padding: 0 } as const
 
   return (
     <div className="screen with-tab">
-      <div className="pad fade-in" style={{ paddingTop: 52, display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div className={desk ? 'desk-grid' : ''} style={desk ? { paddingTop: 64 } : { display: 'contents' }}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div className="pad fade-in" style={{ paddingTop: desk ? 0 : 52, display: 'flex', alignItems: 'center', gap: 14 }}>
         <span style={{ width: 84, height: 84, borderRadius: 42, background: 'var(--tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
           <Mascot mood="happy" size={72} />
         </span>
@@ -31,16 +34,18 @@ export default function My() {
         </div>
       </div>
 
-      <a href="tel:15449030" style={{ display: 'block', margin: '26px 20px 0', padding: '22px 24px', borderRadius: 28, background: 'var(--deep)', color: '#fff' }}>
+      <a href="tel:15449030" style={{ display: 'block', margin: desk ? '32px 0 0' : '26px 20px 0', padding: '22px 24px', borderRadius: 28, background: 'var(--deep)', color: '#fff' }}>
         <div style={{ fontSize: 15, fontWeight: 700 }}>혼자 버티기 힘들면</div>
         <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-0.02em', marginTop: 2 }}>1544-9030</div>
         <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>금연상담전화 바로 걸기</div>
       </a>
-      <button style={{ ...plain, margin: '14px 28px 0', fontSize: 14, fontWeight: 700, textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('school')}>
+      <button style={{ ...plain, margin: desk ? '16px 0 0' : '14px 28px 0', fontSize: 14, fontWeight: 700, textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('school')}>
         학교 보건실 찾아가기 →
       </button>
-
-      <div className="pad" style={{ marginTop: 14 }}>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {desk && <h2 style={{ fontSize: 18, marginBottom: 6 }}>설정</h2>}
+      <div className="pad" style={{ marginTop: desk ? 0 : 14 }}>
         {p?.mode !== 'prevent' && (
           <div style={row}>
             <span>하루 담배값</span>
@@ -58,9 +63,11 @@ export default function My() {
           <Toggle label="진동 호흡 가이드" on={data.settings.vibrate} onChange={(v) => update((d) => ({ ...d, settings: { ...d.settings, vibrate: v } }))} />
         </div>
       </div>
-      <button className="u" style={{ ...plain, margin: '6px 28px 0', fontSize: 13, color: '#A23B2A', textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('reset')}>
+      <button className="u" style={{ ...plain, margin: desk ? '10px 0 0' : '6px 28px 0', fontSize: 13, color: '#A23B2A', textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('reset')}>
         기록 초기화
       </button>
+      </div>
+      </div>
 
       <TabBar on="my" go={go} />
 

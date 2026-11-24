@@ -50,7 +50,7 @@ export default function Prevent() {
   }
 
   return (
-    <div className="screen with-tab">
+    <div className="screen with-tab narrow">
       <PreventTabs on="refuse" />
       <div key={idx} className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '26px 24px 0' }}>
         <span style={{ alignSelf: 'center', fontSize: 12, fontWeight: 700, color: 'var(--mute)', padding: '5px 12px', borderRadius: 8, background: 'var(--soft)' }}>

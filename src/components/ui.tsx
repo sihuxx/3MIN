@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { LEVELS } from '../content'
 
 const PATHS = {
@@ -48,6 +48,8 @@ export function TopBar({ onBack, onClose, right, label }: { onBack?: () => void;
 
 export type Tab = 'home' | 'record' | 'prevent' | 'my'
 export function TabBar({ on, go, bg = 'var(--bg)' }: { on: Tab; go: (t: Tab) => void; bg?: string }) {
+  const desk = useDesktop()
+  if (desk) return null
   const items: [Tab, string][] = [
     ['home', '홈'],
     ['record', '기록'],
@@ -103,4 +105,17 @@ export function Tags({ items, value, onToggle }: { items: string[]; value: strin
       ))}
     </div>
   )
+}
+
+// 컴퓨터 화면(가로 900px 이상) 여부
+const DESK = '(min-width: 900px)'
+export function useDesktop() {
+  const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(DESK).matches)
+  useEffect(() => {
+    const mq = window.matchMedia(DESK)
+    const f = () => setOn(mq.matches)
+    mq.addEventListener('change', f)
+    return () => mq.removeEventListener('change', f)
+  }, [])
+  return on
 }

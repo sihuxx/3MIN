@@ -164,7 +164,7 @@ export function demoData(): Data {
       period: '반년 안',
       kind: '전자담배',
       count: '1~5번',
-      weeklyCost: 11000,
+      weeklyCost: 10500,
       reasons: ['건강', '돈'],
       times: ['하교길', '스트레스 받을 때'],
       confidence: 3,

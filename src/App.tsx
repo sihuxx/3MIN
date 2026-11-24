@@ -12,6 +12,8 @@ import Stickers from './screens/Stickers'
 import Prevent from './screens/Prevent'
 import Quiz from './screens/Quiz'
 import My from './screens/My'
+import Sidebar from './components/Sidebar'
+import { useDesktop } from './components/ui'
 
 export type Route = 'title' | 'onboarding' | 'home' | 'check' | 'hold' | 'game' | 'result' | 'record' | 'stickers' | 'prevent' | 'quiz' | 'my'
 
@@ -37,11 +39,13 @@ const AppCtx = createContext<Ctx>(null as unknown as Ctx)
 export const useApp = () => useContext(AppCtx)
 
 export const HOLD_SECONDS = 180
+const TAB_ROUTES: Route[] = ['home', 'record', 'stickers', 'prevent', 'quiz', 'my']
 
 export default function App() {
   const [data, setData] = useState<Data>(load)
   const [route, setRoute] = useState<Route>(() => (load().profile ? 'home' : 'title'))
   const [session, setSession] = useState<Session | null>(null)
+  const desk = useDesktop()
 
   const update = useCallback((fn: (d: Data) => Data) => {
     setData((prev) => {
@@ -54,6 +58,7 @@ export default function App() {
   const go = useCallback((r: Route) => {
     setRoute(r)
     document.querySelector('.screen')?.scrollTo(0, 0)
+    document.querySelector('.desk-main')?.scrollTo(0, 0)
   }, [])
 
   // 휴대폰 뒤로가기 버튼을 누르면 홈으로
@@ -84,7 +89,20 @@ export default function App() {
 
   return (
     <AppCtx.Provider value={{ data, update, go, session, setSession }}>
-      <div className="app">{screens[route]}</div>
+      <div className="app">
+        {!desk ? (
+          screens[route]
+        ) : TAB_ROUTES.includes(route) ? (
+          <>
+            <Sidebar route={route} />
+            <main className="desk-main">{screens[route]}</main>
+          </>
+        ) : (
+          <main className="desk-flow" style={{ background: route === 'hold' ? 'var(--tint)' : 'var(--bg)' }}>
+            {screens[route]}
+          </main>
+        )}
+      </div>
     </AppCtx.Provider>
   )
 }
