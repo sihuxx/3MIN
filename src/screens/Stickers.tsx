@@ -40,7 +40,7 @@ export default function Stickers() {
   const { data, go } = useApp()
   const list = stickers(data)
   const got = list.filter((s) => s.got).length
-  const xp = data.holds.length * 10 + data.refusals * 5 + Math.floor(data.bubbles / 5)
+  const xp = data.holds.length * 10 + data.holds.reduce((n, h) => n + (h.missions?.length ?? 0) * 10, 0) + data.refusals * 5 + Math.floor(data.bubbles / 5)
   const level = Math.min(LEVEL_NAMES.length, Math.floor(xp / 100) + 1)
   const toNext = level >= LEVEL_NAMES.length ? 0 : level * 100 - xp
 

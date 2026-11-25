@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useApp } from '../App'
 import Mascot from '../components/Mascot'
-import { LevelBars, TopBar } from '../components/ui'
-import { MOODS, PLACES, WITH } from '../content'
+import { LevelBars, TopBar, useDesktop } from '../components/ui'
+import { MOODS, PLACES, WITH, missionById, pickMissions } from '../content'
 
 type Field = 'place' | 'mood' | 'with'
 const OPTIONS: Record<Field, string[]> = { place: PLACES, mood: MOODS, with: WITH }
@@ -14,9 +14,12 @@ export default function Check() {
   const [level, setLevel] = useState(4)
   const [ctx, setCtx] = useState<Record<Field, string>>({ place: last?.place ?? '학교', mood: last?.mood ?? '스트레스', with: last?.with ?? '혼자' })
   const [open, setOpen] = useState<Field | null>(null)
+  const desk = useDesktop()
+  // 상황이 바뀔 때마다 이번 미션 3개를 다시 고름
+  const missions = useMemo(() => pickMissions(ctx), [ctx])
 
   const start = () => {
-    setSession({ before: level, ...ctx, startedAt: Date.now(), mission: Math.floor(Math.random() * 7), missionsDone: 0 })
+    setSession({ before: level, ...ctx, startedAt: Date.now(), missions, done: [], cur: 0, bubbles: 0 })
     go('hold')
   }
   const word = (f: Field) => (
@@ -24,6 +27,81 @@ export default function Check() {
       {ctx[f]}
     </button>
   )
+
+  const preview = (
+    <div>
+      <div className="cap" style={{ marginBottom: 8 }}>이번에 할 미션</div>
+      <div className="tags">
+        {missions.map((id, i) => (
+          <span key={id} className="tag" style={{ background: 'var(--card)', fontWeight: 700 }}>
+            <span style={{ color: 'var(--ac)', fontWeight: 900, marginRight: 6 }}>{i + 1}</span>
+            {missionById(id).short}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+  const sentence = (size: number) => (
+    <p style={{ fontSize: size, fontWeight: 800, lineHeight: 1.75 }}>
+      지금 {word('place')}에서
+      <br />
+      {word('mood')} 상태고
+      <br />
+      {word('with')} 있어
+    </p>
+  )
+  const sheet = open && (
+    <div className="sheet" onClick={() => setOpen(null)}>
+      <div onClick={(e) => e.stopPropagation()} className="fade-in">
+        <h2 style={{ fontSize: 20, marginBottom: 16 }}>{TITLES[open]}</h2>
+        <div className="tags">
+          {OPTIONS[open].map((o) => (
+            <button
+              key={o}
+              className={'tag' + (ctx[open] === o ? ' on' : '')}
+              style={{ fontSize: 16, padding: '12px 18px' }}
+              onClick={() => {
+                setCtx({ ...ctx, [open]: o })
+                setOpen(null)
+              }}
+            >
+              {o}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  if (desk)
+    return (
+      <div className="screen wide2 fade-in" style={{ padding: '0 56px' }}>
+        <TopBar onBack={() => go('home')} />
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: 72, alignItems: 'center', paddingBottom: 56 }}>
+          <div>
+            <h1 style={{ fontSize: 48, lineHeight: 1.25 }}>
+              지금 얼마나
+              <br />
+              피우고 싶어?
+            </h1>
+            <div style={{ marginTop: 36 }}>
+              <LevelBars value={level} onChange={setLevel} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+            {sentence(30)}
+            {preview}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <Mascot mood="worried" size={96} />
+              <button className="btn" onClick={start} style={{ flex: 1, height: 60, fontSize: 17 }}>
+                3분 버티기 시작
+              </button>
+            </div>
+          </div>
+        </div>
+        {sheet}
+      </div>
+    )
 
   return (
     <div className="screen fade-in">
@@ -36,13 +114,8 @@ export default function Check() {
       <div className="pad" style={{ marginTop: 28 }}>
         <LevelBars value={level} onChange={setLevel} />
       </div>
-      <p className="pad" style={{ marginTop: 40, fontSize: 23, fontWeight: 800, lineHeight: 1.75 }}>
-        지금 {word('place')}에서
-        <br />
-        {word('mood')} 상태고
-        <br />
-        {word('with')} 있어
-      </p>
+      <div className="pad" style={{ marginTop: 32 }}>{sentence(23)}</div>
+      <div className="pad" style={{ marginTop: 22 }}>{preview}</div>
       <div style={{ marginTop: 'auto', padding: '24px 24px 34px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <Mascot mood="worried" size={72} />
         <button className="btn" onClick={start} style={{ flex: 1 }}>
@@ -50,28 +123,7 @@ export default function Check() {
         </button>
       </div>
 
-      {open && (
-        <div className="sheet" onClick={() => setOpen(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="fade-in">
-            <h2 style={{ fontSize: 20, marginBottom: 16 }}>{TITLES[open]}</h2>
-            <div className="tags">
-              {OPTIONS[open].map((o) => (
-                <button
-                  key={o}
-                  className={'tag' + (ctx[open] === o ? ' on' : '')}
-                  style={{ fontSize: 16, padding: '12px 18px' }}
-                  onClick={() => {
-                    setCtx({ ...ctx, [open]: o })
-                    setOpen(null)
-                  }}
-                >
-                  {o}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {sheet}
     </div>
   )
 }

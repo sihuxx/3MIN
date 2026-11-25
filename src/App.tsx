@@ -24,8 +24,10 @@ export interface Session {
   mood: string
   with: string
   startedAt: number
-  mission: number
-  missionsDone: number
+  missions: string[] // 이번에 할 미션 3개
+  done: string[] // 끝낸 미션
+  cur: number // 지금 보고 있는 미션 위치
+  bubbles: number // 이번 세션에서 터뜨린 방울
 }
 
 interface Ctx {
@@ -33,7 +35,7 @@ interface Ctx {
   update: (fn: (d: Data) => Data) => void
   go: (r: Route) => void
   session: Session | null
-  setSession: (s: Session | null) => void
+  setSession: React.Dispatch<React.SetStateAction<Session | null>>
 }
 const AppCtx = createContext<Ctx>(null as unknown as Ctx)
 export const useApp = () => useContext(AppCtx)

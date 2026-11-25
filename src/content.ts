@@ -4,16 +4,59 @@ export const PLACES = ['학교', '집', '하교길', '학원', '기타']
 export const MOODS = ['스트레스', '심심함', '피곤함', '화남']
 export const WITH = ['혼자', '친구', '가족']
 
-// 3분 동안 하나씩 해보는 행동 미션
-export const MISSIONS = [
-  { text: '물 한 컵\n천천히 마셔봐', done: '마셨어' },
-  { text: '자리에서 일어나\n기지개 쭉 펴기', done: '폈어' },
-  { text: '찬물로\n손 씻고 오기', done: '씻었어' },
-  { text: '좋아하는 노래\n한 곡 틀기', done: '틀었어' },
-  { text: '껌이나 사탕\n하나 먹기', done: '먹었어' },
-  { text: '창문 열고\n바깥 공기 마시기', done: '마셨어' },
-  { text: '친구한테\n“나 참는 중” 보내기', done: '보냈어' },
+// 3분 동안 하는 행동 미션: 종류마다 화면에서 실제로 하는 방식이 다름
+export type MissionKind = 'breath' | 'timer' | 'steps' | 'game' | 'share' | 'reasons' | 'tap'
+export interface Mission {
+  id: string
+  title: string
+  kind: MissionKind
+  seconds?: number // timer, steps(단계별), reasons
+  steps?: string[]
+  target?: number // game
+  doing?: string // 진행 중 문구
+  cta: string // 시작 버튼
+  short: string // 기록·통계용 짧은 이름
+}
+
+export const MISSIONS: Mission[] = [
+  { id: 'breath', title: '숨 크게 두 번\n4-7-8 호흡', kind: 'breath', cta: '같이 숨 쉬기', short: '호흡' },
+  { id: 'water', title: '물 한 컵\n천천히 마시기', kind: 'timer', seconds: 30, doing: '한 모금씩 천천히', cta: '마시기 시작', short: '물 마시기' },
+  { id: 'stretch', title: '자리에서 일어나\n스트레칭', kind: 'steps', seconds: 10, steps: ['두 팔을 위로 쭉 뻗기', '목을 천천히 한 바퀴', '어깨 으쓱 올렸다 툭'], cta: '따라 하기', short: '스트레칭' },
+  { id: 'wash', title: '찬물로\n손 씻고 오기', kind: 'timer', seconds: 20, doing: '손가락 사이까지 꼼꼼히', cta: '씻으러 가기', short: '손 씻기' },
+  { id: 'walk', title: '30걸음\n걸어보기', kind: 'timer', seconds: 30, doing: '하나, 둘, 셋… 걸음 세면서', cta: '걷기 시작', short: '걷기' },
+  { id: 'bubble', title: '연기 방울\n15개 터뜨리기', kind: 'game', target: 15, cta: '게임하러 가기', short: '버블 팡' },
+  { id: 'message', title: '친구한테\n“나 참는 중” 보내기', kind: 'share', cta: '보내기', short: '친구 알리기' },
+  { id: 'reasons', title: '내가 끊는 이유\n다시 보기', kind: 'reasons', seconds: 8, cta: '이유 보기', short: '이유 보기' },
+  { id: 'gum', title: '껌이나 사탕\n하나 먹기', kind: 'tap', cta: '먹었어', short: '껌·사탕' },
 ]
+export const missionById = (id: string) => MISSIONS.find((m) => m.id === id) ?? MISSIONS[0]
+
+// 지금 상황에 맞는 미션 3개 고르기
+export function pickMissions(ctx: { place: string; mood: string; with: string }, rand = Math.random) {
+  const score: Record<string, number> = {}
+  for (const m of MISSIONS) score[m.id] = rand() * 2
+  const add = (ids: string[], n: number) => ids.forEach((id) => (score[id] += n))
+  if (ctx.mood === '스트레스' || ctx.mood === '화남') add(['breath'], 6)
+  if (ctx.mood === '심심함') add(['bubble', 'walk'], 4)
+  if (ctx.mood === '피곤함') add(['water', 'stretch'], 4)
+  if (ctx.place === '학교' || ctx.place === '학원') add(['water', 'stretch', 'wash'], 3)
+  if (ctx.place === '하교길') add(['walk', 'message', 'reasons'], 3)
+  if (ctx.place === '집') add(['wash', 'gum', 'stretch'], 3)
+  if (ctx.with === '친구') add(['reasons', 'breath'], 3)
+  if (ctx.with === '혼자') add(['message', 'bubble'], 2)
+  const ranked = MISSIONS.map((m) => m.id).sort((a, b) => score[b] - score[a])
+  // 같은 종류만 3개 나오지 않게
+  const out: string[] = []
+  const kinds = new Set<string>()
+  for (const id of ranked) {
+    const k = missionById(id).kind
+    if (kinds.has(k) && ranked.length - out.length > 3) continue
+    out.push(id)
+    kinds.add(k)
+    if (out.length === 3) break
+  }
+  return out
+}
 
 export interface Scenario {
   place: string

@@ -3,6 +3,7 @@ import { useApp } from '../App'
 import Mascot from '../components/Mascot'
 import { TopBar } from '../components/ui'
 import { mmss, useRemaining } from './Hold'
+import { missionById } from '../content'
 
 interface Bubble {
   id: number
@@ -16,7 +17,7 @@ interface Bubble {
 
 // 버블 팡: 위로 떠오르는 연기 방울을 톡톡 터뜨리는 게임
 export default function Game() {
-  const { go, session, update } = useApp()
+  const { go, session, setSession, update } = useApp()
   const remaining = useRemaining()
   const [bubbles, setBubbles] = useState<Bubble[]>([])
   const [score, setScore] = useState(0)
@@ -44,12 +45,17 @@ export default function Game() {
     setBubbles((b) => b.map((x) => (x.id === id ? { ...x, popped: true } : x)))
     scoreRef.current += 1
     setScore(scoreRef.current)
+    setSession((s) => (s ? { ...s, bubbles: s.bubbles + 1 } : s))
     if (navigator.vibrate) navigator.vibrate(15)
   }
 
   const back = () => go(session ? 'hold' : 'home')
+  const gm = session?.missions.find((id) => missionById(id).kind === 'game')
+  const target = gm ? missionById(gm).target ?? 15 : 0
+  const got = session?.bubbles ?? 0
+  const cleared = !!gm && got >= target
   return (
-    <div className="screen">
+    <div className="screen wide2">
       <TopBar onBack={back} right={session ? <span style={{ fontSize: 15, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{mmss(remaining)}</span> : undefined} />
       <div className="pad" style={{ display: 'flex', gap: 20, marginTop: 4 }}>
         {['버블 팡', '담배 피하기', '거절 퀴즈'].map((t, i) => (
@@ -89,6 +95,16 @@ export default function Game() {
             }}
           />
         ))}
+        {gm && (
+          <div style={{ position: 'absolute', right: 20, top: 22, zIndex: 3, background: cleared ? 'var(--ac)' : 'rgba(255,255,255,.85)', color: cleared ? '#fff' : 'var(--ink)', borderRadius: 16, padding: '10px 14px', fontSize: 14, fontWeight: 800 }}>
+            {cleared ? '미션 완료!' : `미션 ${Math.min(got, target)} / ${target}`}
+          </div>
+        )}
+        {cleared && (
+          <button className="btn fade-in" onClick={back} style={{ position: 'absolute', left: 24, right: 24, bottom: 120, width: 'auto', zIndex: 4 }}>
+            미션 완료! 돌아가기
+          </button>
+        )}
         <div style={{ position: 'absolute', right: 16, bottom: -14, pointerEvents: 'none' }}>
           <Mascot mood="cheer" size={140} />
         </div>

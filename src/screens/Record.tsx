@@ -1,6 +1,7 @@
 import { useApp } from '../App'
 import { TabBar, useDesktop } from '../components/ui'
-import { dangerTime, dayCount, dayKey, stickers } from '../store'
+import { dangerTime, dayCount, dayKey, missionEffect, stickers } from '../store'
+import { missionById } from '../content'
 
 const SHADES = ['#FBD9BF', '#F8C29A', '#F2A672']
 
@@ -17,6 +18,7 @@ export default function Record() {
   const perDay = new Map<string, number>()
   for (const h of data.holds) perDay.set(dayKey(new Date(h.at)), (perDay.get(dayKey(new Date(h.at))) ?? 0) + 1)
   const danger = dangerTime(data.holds)
+  const best = missionEffect(data.holds)[0]
   const got = stickers(data).filter((s) => s.got).length
   const desk = useDesktop()
   const cs = desk ? 58 : 34
@@ -62,6 +64,13 @@ export default function Record() {
             </>
           ) : (
             '몇 번 더 기록하면 위험한 때를 알려줄게.'
+          )}
+          {best && best.avg > 0 && (
+            <>
+              <br />
+              나한테 제일 잘 듣는 미션은 <b style={{ color: 'var(--deep)' }}>{missionById(best.id).short}</b>
+              {` (평균 ${best.avg.toFixed(1)}단계↓)`}
+            </>
           )}
         </p>
       </div>

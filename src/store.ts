@@ -23,6 +23,7 @@ export interface Hold {
   place: string
   mood: string
   with: string
+  missions?: string[] // 이번에 완료한 미션 id
 }
 
 export interface Settings {
@@ -154,6 +155,7 @@ export function demoData(): Data {
       place: places[i % places.length],
       mood: moods[i % moods.length],
       with: i % 4 === 0 ? '친구' : '혼자',
+      missions: [['breath', 'water', 'walk'], ['breath', 'bubble'], ['stretch', 'water', 'message'], ['walk', 'reasons', 'breath']][i % 4],
     })
   }
   return {
@@ -174,4 +176,19 @@ export function demoData(): Data {
     bubbles: 32,
     refusals: 3,
   }
+}
+
+// 미션별로 평균 몇 단계 내려갔는지 (2번 이상 한 미션만)
+export function missionEffect(holds: Hold[]) {
+  const m = new Map<string, { sum: number; n: number }>()
+  for (const h of holds) {
+    if (h.after == null || !h.missions) continue
+    for (const id of h.missions) {
+      const v = m.get(id) ?? { sum: 0, n: 0 }
+      v.sum += h.before - h.after
+      v.n += 1
+      m.set(id, v)
+    }
+  }
+  return [...m.entries()].filter(([, v]) => v.n >= 2).map(([id, v]) => ({ id, avg: v.sum / v.n, n: v.n })).sort((a, b) => b.avg - a.avg)
 }
