@@ -4,6 +4,7 @@ import Mascot from '../components/Mascot'
 import { Icon, LevelBars, TopBar, useDesktop } from '../components/ui'
 import { stickers, uid, type Hold } from '../store'
 import { missionById, pickMissions } from '../content'
+import { sfx } from '../sfx'
 
 export default function Result() {
   const { session, setSession, go, update, data } = useApp()
@@ -25,6 +26,7 @@ export default function Result() {
     const next = { ...data, holds: [...data.holds, hold] }
     const got = stickers(next).find((s) => s.got && !had.has(s.id))
     update((d) => ({ ...d, holds: [...d.holds, hold] }))
+    sfx.success()
     setSaved({ before: session.before, after, newSticker: got?.label ?? null, missions: session.done })
     setSession(null)
   }

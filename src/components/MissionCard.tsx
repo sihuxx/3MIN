@@ -3,6 +3,7 @@ import { useApp } from '../App'
 import type { Mission } from '../content'
 import { dayCount, savedMoney, won } from '../store'
 import { Icon } from './ui'
+import { sfx } from '../sfx'
 
 // 4-7-8 호흡: 들이쉬기 4초, 참기 7초, 내쉬기 8초
 const PHASES = [
@@ -44,8 +45,10 @@ function Breath({ onDone, vibrate }: { onDone: () => void; vibrate: boolean }) {
     if (finished) onDone()
   }, [finished, onDone])
   useEffect(() => {
+    if (finished) return
+    sfx.breath(st.i)
     if (vibrate && navigator.vibrate) navigator.vibrate(st.i === 0 ? 200 : st.i === 2 ? [100, 100, 100] : 0)
-  }, [st.i, vibrate])
+  }, [st.i, st.round, vibrate, finished])
   const ph = PHASES[st.i]
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -83,6 +86,9 @@ function Steps({ steps, seconds, onDone }: { steps: string[]; seconds: number; o
   const [st, setSt] = useState({ i: 0, left: seconds })
   const finished = st.i >= steps.length
   useTicker(!finished, () => setSt((p) => (p.left > 1 ? { ...p, left: p.left - 1 } : { i: p.i + 1, left: seconds })))
+  useEffect(() => {
+    if (!finished) sfx.step()
+  }, [st.i, finished])
   useEffect(() => {
     if (finished) onDone()
   }, [finished, onDone])
@@ -125,6 +131,7 @@ export default function MissionCard({ mission, index, onDone }: { mission: Missi
       }
       return
     }
+    sfx.step()
     setStarted(true)
   }
 

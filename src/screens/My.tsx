@@ -55,6 +55,10 @@ export default function My() {
           </div>
         )}
         <div style={row}>
+          <span>효과음</span>
+          <Toggle label="효과음" on={data.settings.sfx !== false} onChange={(v) => update((d) => ({ ...d, settings: { ...d.settings, sfx: v } }))} />
+        </div>
+        <div style={row}>
           <span>파도 소리</span>
           <Toggle label="파도 소리" on={data.settings.sound} onChange={(v) => update((d) => ({ ...d, settings: { ...d.settings, sound: v } }))} />
         </div>

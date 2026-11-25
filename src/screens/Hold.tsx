@@ -4,6 +4,7 @@ import Mascot from '../components/Mascot'
 import MissionCard from '../components/MissionCard'
 import { Icon, useDesktop } from '../components/ui'
 import { missionById } from '../content'
+import { sfx } from '../sfx'
 
 export const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
@@ -91,6 +92,12 @@ export default function Hold() {
     else if (remaining <= 0) go('result')
   }, [remaining, session, go])
 
+  // 마지막 10초 째깍
+  const secLeft = Math.ceil(remaining)
+  useEffect(() => {
+    if (session && secLeft > 0 && secLeft <= 10) sfx.tick(secLeft <= 3)
+  }, [secLeft, session])
+
   const complete = useCallback(
     (id: string) => {
       if (!session || session.done.includes(id)) return
@@ -98,6 +105,7 @@ export default function Hold() {
       const nextIdx = session.missions.findIndex((m) => !done.includes(m))
       setSession({ ...session, done, cur: nextIdx === -1 ? session.cur : nextIdx })
       setCheer(missionById(id).short)
+      sfx.mission()
       if (navigator.vibrate && data.settings.vibrate) navigator.vibrate([60, 40, 60])
       window.clearTimeout(cheerTimer.current)
       cheerTimer.current = window.setTimeout(() => setCheer(null), 1800)

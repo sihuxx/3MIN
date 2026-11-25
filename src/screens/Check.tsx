@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useApp } from '../App'
 import Mascot from '../components/Mascot'
 import { LevelBars, TopBar, useDesktop } from '../components/ui'
+import { sfx } from '../sfx'
 import { MOODS, PLACES, WITH, missionById, pickMissions } from '../content'
 
 type Field = 'place' | 'mood' | 'with'
@@ -19,6 +20,7 @@ export default function Check() {
   const missions = useMemo(() => pickMissions(ctx), [ctx])
 
   const start = () => {
+    sfx.start()
     setSession({ before: level, ...ctx, startedAt: Date.now(), missions, done: [], cur: 0, bubbles: 0 })
     go('hold')
   }

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { load, save, type Data } from './store'
+import { setSfxEnabled } from './sfx'
 import Title from './screens/Title'
 import Onboarding from './screens/Onboarding'
 import Home from './screens/Home'
@@ -48,6 +49,7 @@ export default function App() {
   const [route, setRoute] = useState<Route>(() => (load().profile ? 'home' : 'title'))
   const [session, setSession] = useState<Session | null>(null)
   const desk = useDesktop()
+  useEffect(() => setSfxEnabled(data.settings.sfx !== false), [data.settings.sfx])
 
   const update = useCallback((fn: (d: Data) => Data) => {
     setData((prev) => {

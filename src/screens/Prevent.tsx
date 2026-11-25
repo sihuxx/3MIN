@@ -3,6 +3,7 @@ import { useApp } from '../App'
 import Mascot from '../components/Mascot'
 import { TabBar } from '../components/ui'
 import { SCENARIOS } from '../content'
+import { sfx } from '../sfx'
 
 export function PreventTabs({ on }: { on: 'refuse' | 'quiz' }) {
   const { go } = useApp()
@@ -38,6 +39,8 @@ export default function Prevent() {
 
   const choose = (i: number) => {
     setPick(i)
+    if (sc.options[i].good) sfx.correct()
+    else sfx.wrong()
     if (sc.options[i].good && !counted) {
       setCounted(true)
       update((d) => ({ ...d, refusals: d.refusals + 1 }))

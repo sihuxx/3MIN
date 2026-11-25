@@ -4,6 +4,7 @@ import Mascot from '../components/Mascot'
 import { TopBar } from '../components/ui'
 import { mmss, useRemaining } from './Hold'
 import { missionById } from '../content'
+import { sfx } from '../sfx'
 
 interface Bubble {
   id: number
@@ -43,6 +44,7 @@ export default function Game() {
 
   const pop = (id: number) => {
     setBubbles((b) => b.map((x) => (x.id === id ? { ...x, popped: true } : x)))
+    sfx.pop()
     scoreRef.current += 1
     setScore(scoreRef.current)
     setSession((s) => (s ? { ...s, bubbles: s.bubbles + 1 } : s))
@@ -54,6 +56,9 @@ export default function Game() {
   const target = gm ? missionById(gm).target ?? 15 : 0
   const got = session?.bubbles ?? 0
   const cleared = !!gm && got >= target
+  useEffect(() => {
+    if (cleared) sfx.mission()
+  }, [cleared])
   return (
     <div className="screen wide2">
       <TopBar onBack={back} right={session ? <span style={{ fontSize: 15, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{mmss(remaining)}</span> : undefined} />

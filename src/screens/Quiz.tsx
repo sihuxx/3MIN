@@ -4,6 +4,7 @@ import Mascot from '../components/Mascot'
 import { TabBar } from '../components/ui'
 import { QUIZ } from '../content'
 import { PreventTabs } from './Prevent'
+import { sfx } from '../sfx'
 
 export default function Quiz() {
   const { go, update, data } = useApp()
@@ -17,6 +18,8 @@ export default function Quiz() {
   const answer = (v: boolean) => {
     if (ans !== null) return
     setAns(v)
+    if (v === q.answer) sfx.correct()
+    else sfx.wrong()
     if (v === q.answer) setScore((s) => s + 1)
   }
   const next = () => {

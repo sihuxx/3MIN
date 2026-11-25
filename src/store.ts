@@ -29,6 +29,7 @@ export interface Hold {
 export interface Settings {
   sound: boolean
   vibrate: boolean
+  sfx?: boolean // 효과음 (없으면 켜짐)
 }
 
 export interface Data {
@@ -45,7 +46,7 @@ const KEY = 'sanbunman:v1'
 export const emptyData = (): Data => ({
   profile: null,
   holds: [],
-  settings: { sound: true, vibrate: true },
+  settings: { sound: true, vibrate: true, sfx: true },
   bubbles: 0,
   refusals: 0,
   quizBest: 0,

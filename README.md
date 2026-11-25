@@ -37,7 +37,9 @@ $env:SINGLE=1; npx vite build
 - React 19 + TypeScript + Vite
 - 데이터 저장: 브라우저 localStorage (서버 없음, 기록이 내 기기에만 남는 구조)
 - 마스코트 애니메이션: SVG SMIL 애니메이션
-- 파도 소리: Web Audio API로 직접 만든 소리
+- 파도 소리·효과음: Web Audio API로 직접 만든 소리 (음원 파일 없음, `src/sfx.ts`)
+  - 시작, 미션 완료, 3분 성공, 마지막 10초 째깍, 호흡 단계, 방울 터뜨리기, 정답·오답
+  - 나 화면에서 효과음 켜고 끄기
 - 진동 호흡 가이드: Vibration API (지원하는 휴대폰에서만 동작)
 - 공유: Web Share API (지원하지 않으면 클립보드 복사)
 
