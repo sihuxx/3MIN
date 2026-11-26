@@ -64,7 +64,7 @@ export default function Stickers() {
           Lv.{level} {LEVEL_NAMES[level - 1]}
           {toNext > 0 && (
             <>
-              {' '}· 다음 레벨까지 <b style={{ color: 'var(--ink)' }}>{toNext}XP</b>
+              {' '}· 다음 레벨까지 <b style={{ color: 'var(--ink)' }}>{Math.ceil(toNext / 10)}번</b> 더 버티기
             </>
           )}
         </p>

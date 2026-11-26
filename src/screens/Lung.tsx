@@ -1,31 +1,26 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useApp } from '../App'
-import { Icon, TabBar, useDesktop } from '../components/ui'
+import { TabBar, useDesktop } from '../components/ui'
 import { sfx } from '../sfx'
 import { PreventTabs } from './Prevent'
 
-type Phase = 'idle' | 'listen' | 'ready' | 'blow' | 'done'
+type Phase = 'idle' | 'blow' | 'done'
 const MAX = 60
 
-// 숨 체크: 마이크에 '후~' 길게 내쉬는 시간을 재서 기록
+// 숨 체크: 버튼을 꾹 누른 채 '후~' 길게 내쉬는 시간을 재서 기록
 export default function Lung() {
   const { data, update, go } = useApp()
   const desk = useDesktop()
   const [phase, setPhase] = useState<Phase>('idle')
   const [sec, setSec] = useState(0)
-  const [level, setLevel] = useState(0)
-  const [press, setPress] = useState(false) // 마이크를 못 쓰면 '꾹 누르기' 방식
   const [msg, setMsg] = useState('')
   const [last, setLast] = useState<number | null>(null)
-  const stop = useRef<() => void>(() => {})
   const pressStart = useRef(0)
   const pressTimer = useRef<number>(0)
 
   const list = data.breaths ?? []
   const best = list.reduce((m, b) => Math.max(m, b.sec), 0)
   const first = list[0]?.sec
-
-  useEffect(() => () => stop.current(), [])
 
   const save = (s: number) => {
     const v = Math.round(s * 10) / 10
@@ -34,96 +29,6 @@ export default function Lung() {
     setPhase('done')
     sfx.success()
     update((d) => ({ ...d, breaths: [...(d.breaths ?? []), { at: new Date().toISOString(), sec: v }].slice(-30) }))
-  }
-
-  const startMic = async () => {
-    setMsg('')
-    let stream: MediaStream
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } })
-    } catch {
-      setPress(true)
-      setMsg('마이크를 쓸 수 없어서 꾹 누르는 방식으로 바꿨어')
-      return
-    }
-    const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    const ctx = new Ctx()
-    const an = ctx.createAnalyser()
-    an.fftSize = 1024
-    ctx.createMediaStreamSource(stream).connect(an)
-    const buf = new Float32Array(an.fftSize)
-    const rms = () => {
-      an.getFloatTimeDomainData(buf)
-      let s = 0
-      for (const v of buf) s += v * v
-      return Math.sqrt(s / buf.length)
-    }
-    let raf = 0
-    let quit = false
-    stop.current = () => {
-      quit = true
-      cancelAnimationFrame(raf)
-      stream.getTracks().forEach((t) => t.stop())
-      ctx.close().catch(() => {})
-    }
-
-    // 1) 주변 소리 듣기 → 기준값
-    setPhase('listen')
-    const t0 = performance.now()
-    let ambient = 0
-    let n = 0
-    let threshold = 0.03
-    let readyAt = 0
-    let blowStart = 0
-    let quietSince = 0
-    const loop = () => {
-      if (quit) return
-      const now = performance.now()
-      const v = rms()
-      setLevel(Math.min(1, v / Math.max(threshold * 3, 0.05)))
-      if (!readyAt) {
-        ambient += v
-        n++
-        if (now - t0 > 900) {
-          threshold = Math.max((ambient / n) * 3, 0.03)
-          readyAt = now
-          setPhase('ready')
-          sfx.tick(false)
-        }
-      } else if (!blowStart) {
-        if (v > threshold) {
-          blowStart = now
-          setPhase('blow')
-        } else if (now - readyAt > 8000) {
-          stop.current()
-          setPhase('idle')
-          setMsg('소리가 안 들렸어. 마이크 가까이에서 다시 해봐')
-          return
-        }
-      } else {
-        const s = (now - blowStart) / 1000
-        setSec(s)
-        if (v < threshold * 0.8) {
-          if (!quietSince) quietSince = now
-          if (now - quietSince > 450) {
-            stop.current()
-            const total = (quietSince - blowStart) / 1000
-            if (total < 0.8) {
-              setPhase('idle')
-              setMsg('너무 짧았어. 숨 크게 들이쉬고 길게 내쉬어봐')
-            } else save(total)
-            return
-          }
-        } else quietSince = 0
-        if (s >= MAX) {
-          stop.current()
-          save(MAX)
-          return
-        }
-      }
-      raf = requestAnimationFrame(loop)
-    }
-    raf = requestAnimationFrame(loop)
   }
 
   const pressDown = () => {
@@ -143,11 +48,9 @@ export default function Lung() {
     } else save(Math.min(MAX, s))
   }
 
-  const scale = phase === 'blow' ? 1 + (press ? 0.06 : level * 0.12) : phase === 'ready' ? 1.03 : 1
+  const scale = phase === 'blow' ? 1.06 : 1
   const guide: Record<Phase, string> = {
-    idle: press ? '숨 크게 들이쉬고, 내쉬는 동안 버튼을 꾹 누르고 있어' : '숨 크게 들이쉬고, 마이크에 대고 “후~” 길게 내쉬어봐',
-    listen: '주변 소리 듣는 중…',
-    ready: '지금 “후~” 불어!',
+    idle: '숨 크게 들이쉬고, 내쉬는 동안 버튼을 꾹 누르고 있어',
     blow: '계속, 끝까지 길게',
     done: last !== null ? (sec >= last ? `지난번보다 ${(sec - last).toFixed(1)}초 길어졌어` : `지난번(${last}초)보다 조금 짧았어. 컨디션 따라 달라져`) : '첫 기록! 며칠 뒤에 다시 재봐',
   }
@@ -168,10 +71,10 @@ export default function Lung() {
           transform: `scale(${scale})`,
           transition: 'transform .12s, background .2s',
         }}
-        className={phase === 'ready' ? 'pulse' : undefined}
+        className={phase === 'idle' ? 'pulse' : undefined}
       >
-        {phase === 'idle' || phase === 'listen' || phase === 'ready' ? (
-          <Icon name="mic" size={56} width={1.8} color="var(--ac)" />
+        {phase === 'idle' ? (
+          <span style={{ fontSize: desk ? 40 : 34, fontWeight: 900, color: 'var(--ac)', letterSpacing: '-0.03em' }}>후~</span>
         ) : (
           <>
             <span style={{ fontSize: desk ? 72 : 60, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{sec.toFixed(1)}</span>
@@ -184,37 +87,23 @@ export default function Lung() {
       </p>
       {msg && <p className="cap" style={{ color: 'var(--deep)', marginTop: 4, textAlign: 'center' }}>{msg}</p>}
       <div style={{ width: '100%', marginTop: 16 }}>
-        {press && phase !== 'done' ? (
+        {phase !== 'done' ? (
           <button
             className="btn"
             onPointerDown={pressDown}
             onPointerUp={pressUp}
             onPointerLeave={pressUp}
             onContextMenu={(e) => e.preventDefault()}
-            style={{ touchAction: 'none', userSelect: 'none' }}
+            style={{ touchAction: 'none', userSelect: 'none', WebkitUserSelect: 'none' }}
           >
             {phase === 'blow' ? '내쉬는 중… 떼면 끝' : '꾹 누르고 내쉬기'}
           </button>
-        ) : phase === 'idle' ? (
-          <button className="btn" onClick={startMic}>
-            <Icon name="mic" size={20} color="#fff" width={2} />
-            측정 시작
-          </button>
-        ) : phase === 'done' ? (
+        ) : (
           <button className="btn" onClick={() => { setPhase('idle'); setSec(0) }}>
             다시 재기
           </button>
-        ) : (
-          <button className="btn2" onClick={() => { stop.current(); setPhase('idle') }}>
-            그만하기
-          </button>
         )}
       </div>
-      {!press && phase === 'idle' && (
-        <button className="pill" style={{ marginTop: 10, background: 'rgba(255,255,255,.6)' }} onClick={() => setPress(true)}>
-          마이크 없이 하기
-        </button>
-      )}
     </div>
   )
 

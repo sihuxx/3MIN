@@ -132,9 +132,9 @@ export default function Home() {
             <span style={{ fontSize: 22, fontWeight: 900, lineHeight: 1 }}>SOS</span>
             <span style={{ fontSize: 11, fontWeight: 800, marginTop: 2 }}>3분만</span>
           </span>
-          <span style={{ flex: 1 }}>
-            <span style={{ display: 'block', fontSize: 16, fontWeight: 900 }}>궁금하거나 권유받을 때</span>
-            <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#5C4636', marginTop: 3 }}>호롱이랑 3분만 같이 버티자</span>
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: 'block', fontSize: 17, fontWeight: 900 }}>흔들릴 때 누르기</span>
+            <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#5C4636', marginTop: 3 }}>궁금하거나 권유받았을 때, 3분만 같이 버티자</span>
           </span>
           <Mascot mood="happy" size={58} />
         </button>
