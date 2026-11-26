@@ -5,19 +5,22 @@ import { TabBar } from '../components/ui'
 import { SCENARIOS } from '../content'
 import { sfx } from '../sfx'
 
-export function PreventTabs({ on }: { on: 'refuse' | 'quiz' }) {
+export type PreventTab = 'refuse' | 'quiz' | 'inside' | 'lung'
+const PTABS: [PreventTab, string, 'prevent' | 'quiz' | 'inside' | 'lung'][] = [
+  ['refuse', '거절 연습', 'prevent'],
+  ['quiz', 'OX 퀴즈', 'quiz'],
+  ['inside', '성분 까보기', 'inside'],
+  ['lung', '숨 체크', 'lung'],
+]
+
+export function PreventTabs({ on }: { on: PreventTab }) {
   const { go } = useApp()
   return (
-    <div className="pad" style={{ paddingTop: 58, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16 }}>
-      <h1 style={{ fontSize: 32, flex: 'none' }}>예방</h1>
-      <div style={{ display: 'flex', gap: 20 }}>
-        {(
-          [
-            ['refuse', '거절 연습', 'prevent'],
-            ['quiz', 'OX 퀴즈', 'quiz'],
-          ] as const
-        ).map(([k, l, r]) => (
-          <button key={k} onClick={() => go(r)} aria-current={on === k ? 'page' : undefined} style={{ border: 'none', background: 'transparent', padding: '10px 0 6px', fontSize: 16, fontWeight: on === k ? 800 : 600, color: on === k ? 'var(--ink)' : 'var(--mute)', boxShadow: on === k ? 'inset 0 -3px 0 var(--ac)' : 'none' }}>
+    <div style={{ paddingTop: 58 }}>
+      <h1 className="pad" style={{ fontSize: 32 }}>예방</h1>
+      <div className="pad no-bar" role="tablist" style={{ display: 'flex', gap: 8, marginTop: 14, overflowX: 'auto', paddingBottom: 4 }}>
+        {PTABS.map(([k, l, r]) => (
+          <button key={k} role="tab" aria-selected={on === k} className={'pill' + (on === k ? ' on' : '')} style={{ flex: 'none' }} onClick={() => go(r)}>
             {l}
           </button>
         ))}

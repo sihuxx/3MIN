@@ -6,7 +6,7 @@ import { Icon } from './ui'
 const ITEMS: { label: string; route: Route; also?: Route[] }[] = [
   { label: '홈', route: 'home' },
   { label: '기록', route: 'record', also: ['stickers'] },
-  { label: '예방', route: 'prevent', also: ['quiz'] },
+  { label: '예방', route: 'prevent', also: ['quiz', 'inside', 'lung'] },
   { label: '나', route: 'my' },
 ]
 

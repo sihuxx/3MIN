@@ -5,13 +5,13 @@ import { dayCount, savedMoney, won } from '../store'
 import { Icon } from './ui'
 import { sfx } from '../sfx'
 
-// 4-7-8 호흡: 들이쉬기 4초, 참기 7초, 내쉬기 8초
+// 짧은 호흡: 들이쉬기 3초, 참기 1초, 내쉬기 4초 × 3번 (약 24초)
 const PHASES = [
-  { t: '들이쉬기', s: 4, scale: 1.35 },
-  { t: '참기', s: 7, scale: 1.35 },
-  { t: '내쉬기', s: 8, scale: 0.8 },
+  { t: '들이쉬기', s: 3, scale: 1.35 },
+  { t: '참기', s: 1, scale: 1.35 },
+  { t: '내쉬기', s: 4, scale: 0.8 },
 ]
-const ROUNDS = 2
+const ROUNDS = 3
 
 function useTicker(active: boolean, onTick: () => void) {
   const cb = useRef(onTick)

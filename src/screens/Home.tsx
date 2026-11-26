@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useApp } from '../App'
+import { DangerCard, DangerSheet } from '../components/Danger'
 import Mascot from '../components/Mascot'
 import { TabBar, useDesktop } from '../components/ui'
-import { dayCount, savedMoney, won } from '../store'
+import { dangerPlan, dayCount, savedMoney, won } from '../store'
 
 const WEEK = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -13,6 +15,9 @@ export default function Home() {
   const quit = p?.mode !== 'prevent'
   const dateText = `${now.getMonth() + 1}월 ${now.getDate()}일 ${WEEK[now.getDay()]}요일`
   const desk = useDesktop()
+  const plan = dangerPlan(data.holds)
+  const [open, setOpen] = useState(false)
+  const sheet = open && plan && <DangerSheet plan={plan} onClose={() => setOpen(false)} />
   const short = typeof window !== 'undefined' && window.innerHeight < 720
 
   if (desk) {
@@ -69,15 +74,22 @@ export default function Home() {
             <div style={{ position: 'absolute', left: 24, bottom: 16 }}>
               <Mascot mood="happy" size={230} />
             </div>
-            <p style={{ position: 'absolute', right: 40, bottom: 70, textAlign: 'right', fontSize: 26, fontWeight: 800, lineHeight: 1.45 }}>
-              생각나면
-              <br />
-              바로 눌러.
-              <br />
-              <span style={{ color: 'var(--ac)' }}>같이 참자</span>
-            </p>
+            {plan ? (
+              <div style={{ position: 'absolute', right: 32, bottom: 40 }}>
+                <DangerCard plan={plan} onOpen={() => setOpen(true)} big />
+              </div>
+            ) : (
+              <p style={{ position: 'absolute', right: 40, bottom: 70, textAlign: 'right', fontSize: 26, fontWeight: 800, lineHeight: 1.45 }}>
+                생각나면
+                <br />
+                바로 눌러.
+                <br />
+                <span style={{ color: 'var(--ac)' }}>같이 참자</span>
+              </p>
+            )}
           </div>
         </div>
+        {sheet}
       </div>
     )
   }
@@ -120,17 +132,22 @@ export default function Home() {
         <div style={{ position: 'absolute', left: 10, bottom: 84 }}>
           <Mascot mood="happy" size={short ? 140 : 176} />
         </div>
-        <div style={{ position: 'absolute', right: 24, top: short ? 104 : 120, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
-          <p style={{ textAlign: 'right', fontSize: short ? 18 : 21, fontWeight: 800, lineHeight: 1.45 }}>
-            생각나면
-            <br />
-            바로 눌러.
-            <br />
-            <span style={{ color: 'var(--ac)' }}>같이 참자</span>
-          </p>
+        <div style={{ position: 'absolute', right: 20, top: short ? 104 : 124, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
+          {plan ? (
+            <DangerCard plan={plan} onOpen={() => setOpen(true)} />
+          ) : (
+            <p style={{ textAlign: 'right', fontSize: short ? 18 : 21, fontWeight: 800, lineHeight: 1.45 }}>
+              생각나면
+              <br />
+              바로 눌러.
+              <br />
+              <span style={{ color: 'var(--ac)' }}>같이 참자</span>
+            </p>
+          )}
         </div>
-        <TabBar on="home" go={go} bg="var(--tint)" />
+        <TabBar on="home" go={go} bg="var(--tint)" float />
       </div>
+      {sheet}
     </div>
   )
 }

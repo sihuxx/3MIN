@@ -18,6 +18,13 @@ const PATHS = {
       <path d="M8 11 V8 a4 4 0 0 1 8 0 V11" />
     </>
   ),
+  bell: <path d="M6 16 V11 a6 6 0 0 1 12 0 V16 L19.5 18 H4.5 Z M10 21 H14" />,
+  mic: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11 a6.5 6.5 0 0 0 13 0 M12 17.5 V21" />
+    </>
+  ),
   sparkle: <path d="M12 3 L13.8 10.2 L21 12 L13.8 13.8 L12 21 L10.2 13.8 L3 12 L10.2 10.2 Z" />,
   phone: <path d="M6 3 H10 L11.5 7.5 L9 9 A12 12 0 0 0 15 15 L16.5 12.5 L21 14 V18 A3 3 0 0 1 18 21 A15 15 0 0 1 3 6 A3 3 0 0 1 6 3 Z" />,
 }
@@ -55,7 +62,7 @@ export function TopBar({ onBack, onClose, right, label }: { onBack?: () => void;
 }
 
 export type Tab = 'home' | 'record' | 'prevent' | 'my'
-export function TabBar({ on, go, bg = 'var(--bg)' }: { on: Tab; go: (t: Tab) => void; bg?: string }) {
+export function TabBar({ on, go, bg = 'var(--bg)', float = false }: { on: Tab; go: (t: Tab) => void; bg?: string; float?: boolean }) {
   const desk = useDesktop()
   if (desk) return null
   const items: [Tab, string][] = [
@@ -65,7 +72,7 @@ export function TabBar({ on, go, bg = 'var(--bg)' }: { on: Tab; go: (t: Tab) => 
     ['my', '나'],
   ]
   return (
-    <nav style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 'calc(78px + env(safe-area-inset-bottom))', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))', background: bg, display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 5 }}>
+    <nav style={{ ...(float ? { position: 'absolute', left: 0, right: 0, bottom: 0 } : { position: 'sticky', bottom: 0, marginTop: 'auto', flex: 'none' }), height: 'calc(78px + env(safe-area-inset-bottom))', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))', background: bg, display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 5 }}>
       {items.map(([k, l]) => (
         <button key={k} onClick={() => go(k)} aria-current={k === on ? 'page' : undefined} style={{ border: 'none', background: 'transparent', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 56, minHeight: 44, justifyContent: 'center', fontSize: 14, fontWeight: k === on ? 800 : 600, color: k === on ? 'var(--ink)' : 'var(--mute)' }}>
           <span style={{ width: 5, height: 5, borderRadius: 3, background: k === on ? 'var(--ac)' : 'transparent' }} />

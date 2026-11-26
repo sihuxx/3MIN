@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import { load, save, type Data } from './store'
-import { setSfxEnabled } from './sfx'
+import { dangerPlan, load, nextAlertAt, save, type Data } from './store'
+import { setSfxEnabled, sfx } from './sfx'
 import Title from './screens/Title'
 import Onboarding from './screens/Onboarding'
 import Home from './screens/Home'
@@ -13,10 +13,13 @@ import Stickers from './screens/Stickers'
 import Prevent from './screens/Prevent'
 import Quiz from './screens/Quiz'
 import My from './screens/My'
+import Inside from './screens/Inside'
+import Lung from './screens/Lung'
 import Sidebar from './components/Sidebar'
+import { fireAlert } from './components/Danger'
 import { useDesktop } from './components/ui'
 
-export type Route = 'title' | 'onboarding' | 'home' | 'check' | 'hold' | 'game' | 'result' | 'record' | 'stickers' | 'prevent' | 'quiz' | 'my'
+export type Route = 'title' | 'onboarding' | 'home' | 'check' | 'hold' | 'game' | 'result' | 'record' | 'stickers' | 'prevent' | 'quiz' | 'my' | 'inside' | 'lung'
 
 // 지금 진행 중인 3분 버티기
 export interface Session {
@@ -42,7 +45,7 @@ export const AppCtx = createContext<Ctx | null>(null)
 export const useApp = () => useContext(AppCtx)!
 
 export const HOLD_SECONDS = 180
-const TAB_ROUTES: Route[] = ['home', 'record', 'stickers', 'prevent', 'quiz', 'my']
+const TAB_ROUTES: Route[] = ['home', 'record', 'stickers', 'prevent', 'quiz', 'inside', 'lung', 'my']
 
 export default function App() {
   const [data, setData] = useState<Data>(load)
@@ -50,6 +53,22 @@ export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const desk = useDesktop()
   useEffect(() => setSfxEnabled(data.settings.sfx !== false), [data.settings.sfx])
+
+  // 위험 시간 10분 전 알림 예약 (앱이 열려 있는 동안)
+  const [alertRound, setAlertRound] = useState(0)
+  useEffect(() => {
+    if (!data.settings.alert) return
+    const plan = dangerPlan(data.holds)
+    if (!plan) return
+    const ms = nextAlertAt(plan).getTime() - Date.now()
+    if (ms > 2 ** 31 - 1) return
+    const t = setTimeout(() => {
+      fireAlert(plan)
+      sfx.start()
+      setAlertRound((n) => n + 1)
+    }, ms)
+    return () => clearTimeout(t)
+  }, [data.settings.alert, data.holds, alertRound])
 
   const update = useCallback((fn: (d: Data) => Data) => {
     setData((prev) => {
@@ -89,6 +108,8 @@ export default function App() {
     prevent: <Prevent />,
     quiz: <Quiz />,
     my: <My />,
+    inside: <Inside />,
+    lung: <Lung />,
   }
 
   return (

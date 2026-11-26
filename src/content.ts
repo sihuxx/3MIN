@@ -19,7 +19,7 @@ export interface Mission {
 }
 
 export const MISSIONS: Mission[] = [
-  { id: 'breath', title: '숨 크게 두 번\n4-7-8 호흡', kind: 'breath', cta: '같이 숨 쉬기', short: '호흡' },
+  { id: 'breath', title: '숨 크게\n세 번 쉬기', kind: 'breath', cta: '같이 숨 쉬기', short: '호흡' },
   { id: 'water', title: '물 한 컵\n천천히 마시기', kind: 'timer', seconds: 30, doing: '한 모금씩 천천히', cta: '마시기 시작', short: '물 마시기' },
   { id: 'stretch', title: '자리에서 일어나\n스트레칭', kind: 'steps', seconds: 10, steps: ['두 팔을 위로 쭉 뻗기', '목을 천천히 한 바퀴', '어깨 으쓱 올렸다 툭'], cta: '따라 하기', short: '스트레칭' },
   { id: 'wash', title: '찬물로\n손 씻고 오기', kind: 'timer', seconds: 20, doing: '손가락 사이까지 꼼꼼히', cta: '씻으러 가기', short: '손 씻기' },

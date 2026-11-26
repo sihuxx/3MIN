@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApp } from '../App'
+import { turnOnAlert } from '../components/Danger'
 import Mascot from '../components/Mascot'
 import { Icon, TabBar, Toggle, useDesktop } from '../components/ui'
 import { dayCount, emptyData, save, won } from '../store'
@@ -64,6 +65,10 @@ export default function My() {
         <div style={row}>
           <span>파도 소리</span>
           <Toggle label="파도 소리" on={data.settings.sound} onChange={(v) => update((d) => ({ ...d, settings: { ...d.settings, sound: v } }))} />
+        </div>
+        <div style={row}>
+          <span>조심할 시간 10분 전 알림</span>
+          <Toggle label="조심할 시간 10분 전 알림" on={!!data.settings.alert} onChange={(v) => { update((d) => ({ ...d, settings: { ...d.settings, alert: v } })); if (v) turnOnAlert() }} />
         </div>
         <div style={row}>
           <span>진동 호흡 가이드</span>

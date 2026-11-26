@@ -26,10 +26,16 @@ export interface Hold {
   missions?: string[] // 이번에 완료한 미션 id
 }
 
+export interface Breath {
+  at: string
+  sec: number // 한 번에 내쉰 시간(초)
+}
+
 export interface Settings {
   sound: boolean
   vibrate: boolean
   sfx?: boolean // 효과음 (없으면 켜짐)
+  alert?: boolean // 위험 시간 10분 전 알림
 }
 
 
@@ -37,6 +43,7 @@ export interface Data {
   profile: Profile | null
   holds: Hold[]
   settings: Settings
+  breaths?: Breath[] // 숨 체크 기록
   bubbles: number // 미니게임에서 터뜨린 방울 누적
   refusals: number // 거절 연습에서 좋은 답을 고른 횟수
   quizBest: number
@@ -180,6 +187,7 @@ export function demoData(): Data {
       startDate: start.toISOString(),
     },
     holds,
+    breaths: [14.2, 15.1, 14.8, 16.3, 17.0, 18.4].map((sec, i) => ({ at: new Date(now.getTime() - (10 - i * 2) * DAY).toISOString(), sec })),
     bubbles: 32,
     refusals: 3,
   }
@@ -200,3 +208,56 @@ export function missionEffect(holds: Hold[]) {
   return [...m.entries()].filter(([, v]) => v.n >= 2).map(([id, v]) => ({ id, avg: v.sum / v.n, n: v.n })).sort((a, b) => b.avg - a.avg)
 }
 
+
+// ---------- 위험 시간 ----------
+export function hourLabel(h: number) {
+  if (h < 5) return `새벽 ${h === 0 ? 12 : h}시쯤`
+  if (h < 12) return `오전 ${h}시쯤`
+  if (h === 12) return '낮 12시쯤'
+  if (h < 18) return `오후 ${h - 12}시쯤`
+  return `밤 ${h - 12}시쯤`
+}
+
+export interface DangerPlan {
+  hour: number
+  label: string
+  place: string
+  mood: string
+  count: number
+  total: number
+}
+
+const mode = (xs: string[]) => {
+  const c = new Map<string, number>()
+  xs.forEach((x) => c.set(x, (c.get(x) ?? 0) + 1))
+  return [...c.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? ''
+}
+
+// 기록에서 제일 많이 당긴 시간대(1시간 단위)와 그때 주로 있던 장소·기분
+export function dangerPlan(holds: Hold[]): DangerPlan | null {
+  if (holds.length < 3) return null
+  const byHour = new Map<number, Hold[]>()
+  holds.forEach((h) => {
+    const k = new Date(h.at).getHours()
+    byHour.set(k, [...(byHour.get(k) ?? []), h])
+  })
+  const [hour, list] = [...byHour.entries()].sort((a, b) => b[1].length - a[1].length)[0]
+  if (list.length < 2) return null
+  return { hour, label: hourLabel(hour), place: mode(list.map((h) => h.place)), mood: mode(list.map((h) => h.mood)), count: list.length, total: holds.length }
+}
+
+// 위험 시간 15분 전부터 1시간 동안은 '지금 조심할 때'
+export function inDanger(plan: DangerPlan, now = new Date()) {
+  const m = now.getHours() * 60 + now.getMinutes()
+  const start = plan.hour * 60 - 15
+  return m >= start && m < plan.hour * 60 + 60
+}
+
+// 다음 알림 시각: 위험 시간 10분 전
+export function nextAlertAt(plan: DangerPlan, now = new Date()) {
+  const t = new Date(now)
+  t.setHours(plan.hour, 0, 0, 0)
+  t.setMinutes(-10)
+  if (t <= now) t.setDate(t.getDate() + 1)
+  return t
+}
