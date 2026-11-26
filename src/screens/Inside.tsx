@@ -115,16 +115,16 @@ export default function Inside() {
     <div className={'screen with-tab' + (desk ? '' : ' narrow')}>
       <PreventTabs on="inside" />
       {desk ? (
-        <div className="desk-grid" style={{ marginTop: 28 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ marginTop: 28, paddingBottom: 40 }}>
+          <div className="desk-grid">
             <BodyMap />
-            <div style={{ height: 8 }} />
-            {cards}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {stuff}
+              {bottom}
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {stuff}
-            {bottom}
-          </div>
+          <h2 style={{ fontSize: 18, marginTop: 40 }}>담배 속 까보기</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14, marginTop: 12, alignItems: 'start' }}>{cards}</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '22px 20px 28px' }}>

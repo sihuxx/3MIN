@@ -35,7 +35,7 @@ export default function Record() {
     const bg = today ? 'var(--ac)' : future ? 'transparent' : n > 0 ? SHADES[Math.min(n, 3) - 1] : 'var(--soft)'
     const color = today ? '#fff' : future ? '#CDBFB1' : n > 0 ? 'var(--ink)' : 'var(--mute)'
     cells.push(
-      <span key={d} aria-label={`${m + 1}월 ${d}일 ${n}번 버팀`} style={{ width: cs, height: cs, borderRadius: desk ? 14 : 10, background: bg, color, fontSize: desk ? 14 : 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span key={d} aria-label={`${m + 1}월 ${d}일 ${n}번 버팀`} style={{ width: '100%', maxWidth: cs, aspectRatio: '1', justifySelf: 'center', borderRadius: desk ? 14 : 10, background: bg, color, fontSize: desk ? 14 : 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {d}
       </span>,
     )
@@ -74,9 +74,9 @@ export default function Record() {
           )}
         </p>
       </div>
-      <div style={{ margin: desk ? '6px 0 0' : '30px 28px 0', display: 'grid', gridTemplateColumns: `repeat(7, ${cs}px)`, justifyContent: 'space-between', rowGap: desk ? 10 : 7, alignSelf: 'start' }}>
+      <div style={{ margin: desk ? '6px 0 0' : '30px 28px 0', display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: desk ? 8 : 5, rowGap: desk ? 10 : 7, alignSelf: 'start' }}>
         {'월화수목금토일'.split('').map((d) => (
-          <span key={d} style={{ width: cs, textAlign: 'center', fontSize: desk ? 13 : 11, fontWeight: 700, color: 'var(--mute)' }}>
+          <span key={d} style={{ textAlign: 'center', fontSize: desk ? 13 : 11, fontWeight: 700, color: 'var(--mute)' }}>
             {d}
           </span>
         ))}

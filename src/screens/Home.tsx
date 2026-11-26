@@ -20,6 +20,8 @@ export default function Home() {
   const [open, setOpen] = useState(false)
   const sheet = open && plan && <DangerSheet plan={plan} onClose={() => setOpen(false)} />
   const short = typeof window !== 'undefined' && window.innerHeight < 720
+  const tiny = typeof window !== 'undefined' && window.innerHeight < 600
+  const narrowDesk = typeof window !== 'undefined' && window.innerWidth < 1200
 
   if (desk) {
     const recent = [...data.holds].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 4)
@@ -28,7 +30,7 @@ export default function Home() {
         <div className="desk-grid" style={{ alignItems: 'stretch' }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <p className="cap" style={{ fontSize: 15 }}>{dateText}</p>
-            <h1 style={{ marginTop: 14, fontSize: 56, lineHeight: 1.2 }}>
+            <h1 style={{ marginTop: 14, fontSize: 'clamp(38px, 4.2vw, 56px)', lineHeight: 1.2 }}>
               {p?.nickname ?? '친구'},<br />
               <span style={{ color: 'var(--ac)' }}>{days}일째</span> {quit ? '버티는 중' : '지키는 중'}
             </h1>
@@ -81,7 +83,7 @@ export default function Home() {
               <span style={{ fontSize: 20, fontWeight: 800 }}>3분만</span>
             </button>
             <div style={{ position: 'absolute', left: 24, bottom: 16 }}>
-              <Mascot mood="happy" size={230} />
+              <Mascot mood="happy" size={narrowDesk ? 170 : 230} />
             </div>
             {plan ? (
               <div style={{ position: 'absolute', right: 32, bottom: 40 }}>
@@ -143,7 +145,7 @@ export default function Home() {
 
   return (
     <div className="screen">
-      <div className="pad fade-in" style={{ paddingTop: short ? 26 : 58 }}>
+      <div className="pad fade-in" style={{ paddingTop: tiny ? 18 : short ? 26 : 58 }}>
         <p className="cap">{dateText}</p>
         <h1 style={{ marginTop: 10, fontSize: short ? 32 : 36, lineHeight: 1.25 }}>
           {p?.nickname ?? '친구'},<br />
@@ -165,8 +167,8 @@ export default function Home() {
           )}
         </p>
       </div>
-      <div style={{ flex: 1, minHeight: 96 }} />
-      <div style={{ position: 'relative', height: short ? 324 : 420, flex: 'none', background: 'var(--tint)', borderRadius: '48px 48px 0 0' }}>
+      <div style={{ flex: 1, minHeight: tiny ? 86 : 96 }} />
+      <div style={{ position: 'relative', height: tiny ? 286 : short ? 324 : 420, flex: 'none', background: 'var(--tint)', borderRadius: '48px 48px 0 0' }}>
         <button
          
           onClick={() => go('check')}
@@ -177,9 +179,9 @@ export default function Home() {
           <span style={{ fontSize: 18, fontWeight: 800 }}>3분만</span>
         </button>
         <div style={{ position: 'absolute', left: 10, bottom: 84 }}>
-          <Mascot mood="happy" size={short ? 140 : 176} />
+          <Mascot mood="happy" size={tiny ? 118 : short ? 140 : 176} />
         </div>
-        <div style={{ position: 'absolute', right: 20, top: short ? 104 : 124, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
+        <div style={{ position: 'absolute', right: 20, top: tiny ? 98 : short ? 104 : 124, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
           {plan ? (
             <DangerCard plan={plan} onOpen={() => setOpen(true)} />
           ) : (

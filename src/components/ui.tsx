@@ -93,7 +93,7 @@ export function LevelBars({ value, onChange }: { value: number; onChange: (v: nu
         const on = v === value
         return (
           <button key={l} role="radio" aria-checked={on} onClick={() => onChange(v)} style={{ display: 'flex', alignItems: 'center', gap: 14, border: 'none', background: 'transparent', padding: 0, textAlign: 'left', minHeight: 36 }}>
-            <span style={{ height: 34, width: 56 + i * 40, borderRadius: 10, background: v <= value ? SHADES[i] : 'var(--soft)', transition: 'background .2s' }} />
+            <span style={{ height: 34, width: `min(${56 + i * 40}px, ${16 + i * 9}vw)`, flex: 'none', borderRadius: 10, background: v <= value ? SHADES[i] : 'var(--soft)', transition: 'background .2s' }} />
             <span style={{ fontSize: 15, fontWeight: on ? 800 : 500, color: on ? 'var(--ink)' : 'var(--mute)' }}>{l}</span>
           </button>
         )
