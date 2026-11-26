@@ -62,19 +62,7 @@ export default function Game() {
   return (
     <div className="screen wide2">
       <TopBar onBack={back} right={session ? <span style={{ fontSize: 15, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{mmss(remaining)}</span> : undefined} />
-      <div className="pad" style={{ display: 'flex', gap: 20, marginTop: 4 }}>
-        {['버블 팡', '담배 피하기', '거절 퀴즈'].map((t, i) => (
-          <button
-            key={t}
-            onClick={() => i === 2 && go('quiz')}
-            style={{ border: 'none', background: 'transparent', padding: '0 0 6px', fontSize: 16, fontWeight: i === 0 ? 800 : 600, color: i === 0 ? 'var(--ink)' : i === 1 ? '#C9BDB2' : 'var(--mute)', boxShadow: i === 0 ? 'inset 0 -3px 0 var(--ac)' : 'none' }}
-            aria-disabled={i === 1}
-          >
-            {t}
-            {i === 1 && <span style={{ fontSize: 11, marginLeft: 4 }}>준비 중</span>}
-          </button>
-        ))}
-      </div>
+      <h1 className="pad" style={{ fontSize: 26, marginTop: 2 }}>버블 팡</h1>
       <div style={{ position: 'relative', flex: 1, minHeight: 420, marginTop: 18, background: 'var(--tint)', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', left: 28, top: 22, zIndex: 2, pointerEvents: 'none' }}>
           <div style={{ fontSize: 64, fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1 }}>{score}</div>
@@ -115,8 +103,8 @@ export default function Game() {
         </div>
       </div>
       <div style={{ padding: '14px 28px 30px' }}>
-        <button onClick={back} style={{ border: 'none', background: 'transparent', fontSize: 15, fontWeight: 700, minHeight: 44, padding: 0 }}>
-          ← {session ? '미션으로 돌아가기' : '홈으로'}
+        <button className="btn2" onClick={back}>
+          {session ? '미션으로 돌아가기' : '홈으로'}
         </button>
       </div>
     </div>

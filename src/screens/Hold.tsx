@@ -171,12 +171,13 @@ export default function Hold() {
   )
 
   const tools = (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-      <button style={{ border: 'none', background: 'transparent', fontSize: 15, fontWeight: 700, minHeight: 44, color: sound ? 'var(--ac)' : 'var(--ink)' }} onClick={() => setSound(!sound)} aria-pressed={sound}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+      <button className={'pill white' + (sound ? ' on' : '')} onClick={() => setSound(!sound)} aria-pressed={sound}>
+        <Icon name="wave" size={16} color={sound ? 'var(--ac)' : 'var(--ink)'} width={2} />
         파도 소리{sound ? ' 켜짐' : ''}
       </button>
-      <span style={{ color: '#D9B79A' }}>·</span>
-      <button style={{ border: 'none', background: 'transparent', fontSize: 15, fontWeight: 700, minHeight: 44, color: 'var(--deep)' }} onClick={() => go('my')}>
+      <button className="pill white" style={{ color: 'var(--deep)' }} onClick={() => go('my')}>
+        <Icon name="phone" size={16} color="var(--deep)" width={2} />
         도움 받기
       </button>
     </div>
@@ -191,7 +192,7 @@ export default function Hold() {
 
   const toast = cheer && (
     <div role="status" className="fade-in" style={{ position: 'fixed', left: '50%', top: 24, transform: 'translateX(-50%)', zIndex: 30, background: 'var(--deep)', color: '#fff', borderRadius: 999, padding: '12px 20px', fontSize: 15, fontWeight: 800, whiteSpace: 'nowrap' }}>
-      {cheer} 완료! <span style={{ color: '#FFC46B' }}>+10XP</span>
+      {cheer} 완료!
     </div>
   )
 

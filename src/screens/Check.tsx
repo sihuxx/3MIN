@@ -108,18 +108,18 @@ export default function Check() {
   return (
     <div className="screen fade-in">
       <TopBar onBack={() => go('home')} />
-      <h1 className="pad" style={{ marginTop: 6, fontSize: 32, lineHeight: 1.3 }}>
+      <h1 className="pad" style={{ marginTop: 6, fontSize: 'clamp(26px, 8vw, 32px)', lineHeight: 1.3 }}>
         지금 얼마나
         <br />
         피우고 싶어?
       </h1>
-      <div className="pad" style={{ marginTop: 28 }}>
+      <div className="pad" style={{ marginTop: 'clamp(16px, 3vh, 28px)' }}>
         <LevelBars value={level} onChange={setLevel} />
       </div>
       <div className="pad" style={{ marginTop: 32 }}>{sentence(23)}</div>
       <div className="pad" style={{ marginTop: 22 }}>{preview}</div>
-      <div style={{ marginTop: 'auto', padding: '24px 24px 34px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Mascot mood="worried" size={72} />
+      <div style={{ marginTop: 'auto', position: 'sticky', bottom: 0, zIndex: 5, padding: '16px 24px calc(20px + env(safe-area-inset-bottom))', display: 'flex', alignItems: 'center', gap: 12, background: 'linear-gradient(rgba(250,246,240,0), var(--bg) 30%)' }}>
+        <Mascot mood="worried" size={64} />
         <button className="btn" onClick={start} style={{ flex: 1 }}>
           3분 버티기 시작
         </button>

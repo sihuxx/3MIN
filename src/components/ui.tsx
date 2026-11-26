@@ -12,6 +12,14 @@ const PATHS = {
   ),
   check: <path d="M5 12 L10 17 L19 7" />,
   arrow: <path d="M4 12 H20 M14 6 L20 12 L14 18" />,
+  lock: (
+    <>
+      <rect x="5" y="11" width="14" height="10" rx="3" />
+      <path d="M8 11 V8 a4 4 0 0 1 8 0 V11" />
+    </>
+  ),
+  sparkle: <path d="M12 3 L13.8 10.2 L21 12 L13.8 13.8 L12 21 L10.2 13.8 L3 12 L10.2 10.2 Z" />,
+  phone: <path d="M6 3 H10 L11.5 7.5 L9 9 A12 12 0 0 0 15 15 L16.5 12.5 L21 14 V18 A3 3 0 0 1 18 21 A15 15 0 0 1 3 6 A3 3 0 0 1 6 3 Z" />,
 }
 export type IconName = keyof typeof PATHS
 
@@ -57,7 +65,7 @@ export function TabBar({ on, go, bg = 'var(--bg)' }: { on: Tab; go: (t: Tab) => 
     ['my', '나'],
   ]
   return (
-    <nav style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 78, paddingBottom: 10, background: bg, display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 5 }}>
+    <nav style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 'calc(78px + env(safe-area-inset-bottom))', paddingBottom: 'calc(10px + env(safe-area-inset-bottom))', background: bg, display: 'flex', justifyContent: 'space-around', alignItems: 'center', zIndex: 5 }}>
       {items.map(([k, l]) => (
         <button key={k} onClick={() => go(k)} aria-current={k === on ? 'page' : undefined} style={{ border: 'none', background: 'transparent', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, minWidth: 56, minHeight: 44, justifyContent: 'center', fontSize: 14, fontWeight: k === on ? 800 : 600, color: k === on ? 'var(--ink)' : 'var(--mute)' }}>
           <span style={{ width: 5, height: 5, borderRadius: 3, background: k === on ? 'var(--ac)' : 'transparent' }} />

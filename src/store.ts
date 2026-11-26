@@ -32,6 +32,7 @@ export interface Settings {
   sfx?: boolean // 효과음 (없으면 켜짐)
 }
 
+
 export interface Data {
   profile: Profile | null
   holds: Hold[]
@@ -102,6 +103,11 @@ export function dangerTime(holds: Hold[]) {
     count.set(k, (count.get(k) ?? 0) + 1)
   }
   return [...count.entries()].sort((a, b) => b[1] - a[1])[0][0]
+}
+
+// XP: 버티기 10, 미션 하나 10, 거절 연습 성공 5, 방울 5개당 1
+export function xpOf(d: Data) {
+  return d.holds.length * 10 + d.holds.reduce((n, h) => n + (h.missions?.length ?? 0) * 10, 0) + d.refusals * 5 + Math.floor(d.bubbles / 5)
 }
 
 export interface Sticker {
@@ -193,3 +199,4 @@ export function missionEffect(holds: Hold[]) {
   }
   return [...m.entries()].filter(([, v]) => v.n >= 2).map(([id, v]) => ({ id, avg: v.sum / v.n, n: v.n })).sort((a, b) => b.avg - a.avg)
 }
+

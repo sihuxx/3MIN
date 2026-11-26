@@ -13,6 +13,7 @@ export default function Home() {
   const quit = p?.mode !== 'prevent'
   const dateText = `${now.getMonth() + 1}월 ${now.getDate()}일 ${WEEK[now.getDay()]}요일`
   const desk = useDesktop()
+  const short = typeof window !== 'undefined' && window.innerHeight < 720
 
   if (desk) {
     const recent = [...data.holds].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 4)
@@ -57,6 +58,7 @@ export default function Home() {
           </div>
           <div style={{ position: 'relative', minHeight: 600, background: 'var(--tint)', borderRadius: 44, overflow: 'hidden' }}>
             <button
+             
               onClick={() => go('check')}
               aria-label="SOS, 담배 생각날 때 누르기"
               style={{ position: 'absolute', left: '50%', top: 64, marginLeft: -110, width: 220, height: 220, borderRadius: 110, background: 'var(--ac)', border: '14px solid var(--bg)', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}
@@ -82,9 +84,9 @@ export default function Home() {
 
   return (
     <div className="screen">
-      <div className="pad fade-in" style={{ paddingTop: 58 }}>
+      <div className="pad fade-in" style={{ paddingTop: short ? 26 : 58 }}>
         <p className="cap">{dateText}</p>
-        <h1 style={{ marginTop: 10, fontSize: 36, lineHeight: 1.25 }}>
+        <h1 style={{ marginTop: 10, fontSize: short ? 32 : 36, lineHeight: 1.25 }}>
           {p?.nickname ?? '친구'},<br />
           <span style={{ color: 'var(--ac)' }}>{days}일째</span> {quit ? '버티는 중' : '지키는 중'}
         </h1>
@@ -104,25 +106,29 @@ export default function Home() {
           )}
         </p>
       </div>
-      <div style={{ position: 'relative', marginTop: 'auto', height: 420, flex: 'none', background: 'var(--tint)', borderRadius: '48px 48px 0 0' }}>
+      <div style={{ flex: 1, minHeight: 96 }} />
+      <div style={{ position: 'relative', height: short ? 324 : 420, flex: 'none', background: 'var(--tint)', borderRadius: '48px 48px 0 0' }}>
         <button
+         
           onClick={() => go('check')}
           aria-label="SOS, 담배 생각날 때 누르기"
-          style={{ position: 'absolute', left: '50%', top: -78, marginLeft: -84, width: 168, height: 168, borderRadius: 84, background: 'var(--ac)', border: '10px solid var(--bg)', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}
+          style={{ position: 'absolute', left: '50%', top: -78, zIndex: 2, marginLeft: -84, width: 168, height: 168, borderRadius: 84, background: 'var(--ac)', border: '10px solid var(--bg)', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, boxShadow: 'inset 0 -6px 0 rgba(0,0,0,.14)' }}
         >
           <span style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1 }}>SOS</span>
           <span style={{ fontSize: 18, fontWeight: 800 }}>3분만</span>
         </button>
-        <div style={{ position: 'absolute', left: 14, bottom: 86 }}>
-          <Mascot mood="happy" size={176} />
+        <div style={{ position: 'absolute', left: 10, bottom: 84 }}>
+          <Mascot mood="happy" size={short ? 140 : 176} />
         </div>
-        <p style={{ position: 'absolute', right: 30, top: 132, textAlign: 'right', fontSize: 21, fontWeight: 800, lineHeight: 1.45 }}>
-          생각나면
-          <br />
-          바로 눌러.
-          <br />
-          <span style={{ color: 'var(--ac)' }}>같이 참자</span>
-        </p>
+        <div style={{ position: 'absolute', right: 24, top: short ? 104 : 120, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 14 }}>
+          <p style={{ textAlign: 'right', fontSize: short ? 18 : 21, fontWeight: 800, lineHeight: 1.45 }}>
+            생각나면
+            <br />
+            바로 눌러.
+            <br />
+            <span style={{ color: 'var(--ac)' }}>같이 참자</span>
+          </p>
+        </div>
         <TabBar on="home" go={go} bg="var(--tint)" />
       </div>
     </div>

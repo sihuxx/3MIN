@@ -47,7 +47,7 @@ export default function Record() {
       <div className={desk ? '' : 'pad'} style={{ paddingTop: desk ? 0 : 58 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <p className="cap">{m + 1}월 기록</p>
-          <button onClick={() => go('stickers')} style={{ border: 'none', background: 'transparent', fontSize: 14, fontWeight: 800, minHeight: 44, padding: 0 }}>
+          <button className="pill" onClick={() => go('stickers')}>
             스티커 {got}장 →
           </button>
         </div>

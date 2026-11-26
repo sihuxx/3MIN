@@ -110,7 +110,7 @@ export default function Result() {
     <div style={{ background: 'var(--card)', borderRadius: 22, padding: '16px 18px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <span style={{ fontSize: 15, fontWeight: 800 }}>해낸 미션</span>
-        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--ac)' }}>+{saved.missions.length * 10}XP</span>
+        <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--ac)' }}>{saved.missions.length}개</span>
       </div>
       {saved.missions.length === 0 ? (
         <p style={{ marginTop: 8, fontSize: 14, color: 'var(--mute)' }}>이번엔 미션 없이 버텼어. 그것도 대단해</p>
@@ -139,18 +139,18 @@ export default function Result() {
     </div>
   )
   const actions = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <button className="btn" onClick={() => go('home')}>
-        홈으로
-      </button>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 22 }}>
-        <button className="u" style={{ border: 'none', background: 'transparent', fontSize: 14, fontWeight: 700, minHeight: 36 }} onClick={again}>
-          아직 강해? 3분 더
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 10 }}>
+        <button className="pill" style={{ flex: 1 }} onClick={again}>
+          3분 더 버티기
         </button>
-        <button className="u" style={{ border: 'none', background: 'transparent', fontSize: 14, fontWeight: 700, minHeight: 36 }} onClick={share}>
+        <button className="pill" style={{ flex: 1 }} onClick={share}>
           친구한테 자랑
         </button>
       </div>
+      <button className="btn" onClick={() => go('home')}>
+        홈으로
+      </button>
     </div>
   )
 
@@ -175,7 +175,9 @@ export default function Result() {
     <div className="screen fade-in">
       <TopBar onClose={() => go('home')} />
       <div className="pad" style={{ paddingTop: 6 }}>{numbers}</div>
-      <div style={{ margin: '18px 20px 0' }}>{missions}</div>
+      <div style={{ margin: '18px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {missions}
+      </div>
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', margin: '4px 20px 0 28px' }}>
         {sticker || <span />}
         <Mascot mood="cheer" size={130} />

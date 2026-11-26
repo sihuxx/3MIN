@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../App'
 import Mascot from '../components/Mascot'
-import { TabBar, Toggle, useDesktop } from '../components/ui'
+import { Icon, TabBar, Toggle, useDesktop } from '../components/ui'
 import { dayCount, emptyData, save, won } from '../store'
 import { Pick } from './Onboarding'
 
@@ -27,7 +27,7 @@ export default function My() {
           <h1 style={{ fontSize: 30 }}>{p?.nickname ?? '친구'}</h1>
           <p style={{ marginTop: 4, fontSize: 14, color: 'var(--mute)' }}>
             {p?.mode === 'prevent' ? '예방 모드' : '금연 모드'} · {dayCount(p)}일째 ·{' '}
-            <button className="u" style={{ ...plain, fontSize: 14, fontWeight: 700 }} onClick={() => setSheet('mode')}>
+            <button className="pill" style={{ minHeight: 32, padding: '0 10px', fontSize: 13, marginLeft: 2 }} onClick={() => setSheet('mode')}>
               바꾸기
             </button>
           </p>
@@ -37,9 +37,12 @@ export default function My() {
       <a href="tel:15449030" style={{ display: 'block', margin: desk ? '32px 0 0' : '26px 20px 0', padding: '22px 24px', borderRadius: 28, background: 'var(--deep)', color: '#fff' }}>
         <div style={{ fontSize: 15, fontWeight: 700 }}>혼자 버티기 힘들면</div>
         <div style={{ fontSize: 30, fontWeight: 900, letterSpacing: '-0.02em', marginTop: 2 }}>1544-9030</div>
-        <div style={{ fontSize: 14, fontWeight: 700, marginTop: 2 }}>금연상담전화 바로 걸기</div>
+        <div style={{ fontSize: 14, fontWeight: 800, marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,.2)', padding: '8px 12px', borderRadius: 12 }}>
+          <Icon name="phone" color="#fff" size={16} width={2} />
+          금연상담전화 바로 걸기
+        </div>
       </a>
-      <button style={{ ...plain, margin: desk ? '16px 0 0' : '14px 28px 0', fontSize: 14, fontWeight: 700, textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('school')}>
+      <button className="pill" style={{ margin: desk ? '14px 0 0' : '12px 20px 0', alignSelf: 'flex-start' }} onClick={() => setSheet('school')}>
         학교 보건실 찾아가기 →
       </button>
       </div>
@@ -67,7 +70,7 @@ export default function My() {
           <Toggle label="진동 호흡 가이드" on={data.settings.vibrate} onChange={(v) => update((d) => ({ ...d, settings: { ...d.settings, vibrate: v } }))} />
         </div>
       </div>
-      <button className="u" style={{ ...plain, margin: desk ? '10px 0 0' : '6px 28px 0', fontSize: 13, color: '#A23B2A', textAlign: 'left', minHeight: 36, alignSelf: 'flex-start' }} onClick={() => setSheet('reset')}>
+      <button className="pill" style={{ margin: desk ? '14px 0 0' : '10px 28px 0', color: '#A23B2A', alignSelf: 'flex-start' }} onClick={() => setSheet('reset')}>
         기록 초기화
       </button>
       </div>

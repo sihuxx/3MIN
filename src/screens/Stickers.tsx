@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useApp } from '../App'
 import { Icon, TopBar, useDesktop } from '../components/ui'
-import { RECOVERY, stickers } from '../store'
+import { RECOVERY, stickers, xpOf } from '../store'
 
 const LEVEL_NAMES = ['불씨', '반짝', '활활', '이글이글', '횃불']
 
@@ -40,7 +40,7 @@ export default function Stickers() {
   const { data, go } = useApp()
   const list = stickers(data)
   const got = list.filter((s) => s.got).length
-  const xp = data.holds.length * 10 + data.holds.reduce((n, h) => n + (h.missions?.length ?? 0) * 10, 0) + data.refusals * 5 + Math.floor(data.bubbles / 5)
+  const xp = xpOf(data)
   const level = Math.min(LEVEL_NAMES.length, Math.floor(xp / 100) + 1)
   const toNext = level >= LEVEL_NAMES.length ? 0 : level * 100 - xp
 

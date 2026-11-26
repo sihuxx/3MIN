@@ -38,8 +38,8 @@ interface Ctx {
   session: Session | null
   setSession: React.Dispatch<React.SetStateAction<Session | null>>
 }
-const AppCtx = createContext<Ctx>(null as unknown as Ctx)
-export const useApp = () => useContext(AppCtx)
+export const AppCtx = createContext<Ctx | null>(null)
+export const useApp = () => useContext(AppCtx)!
 
 export const HOLD_SECONDS = 180
 const TAB_ROUTES: Route[] = ['home', 'record', 'stickers', 'prevent', 'quiz', 'my']

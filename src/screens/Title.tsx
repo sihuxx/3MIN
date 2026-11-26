@@ -31,7 +31,7 @@ export default function Title() {
             <button className="btn" onClick={() => go('onboarding')}>
               시작하기
             </button>
-            <button className="u" style={{ border: 'none', background: 'transparent', fontSize: 15, fontWeight: 700, color: 'var(--mute)', minHeight: 36 }} onClick={demo}>
+            <button className="btn2" onClick={demo}>
               예시 데이터로 둘러보기
             </button>
           </div>
@@ -52,15 +52,11 @@ export default function Title() {
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 220 }}>
         <Mascot mood="happy" size={210} />
       </div>
-      <div style={{ padding: '0 24px 30px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ padding: '0 24px 30px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button className="btn" onClick={() => go('onboarding')}>
           시작하기
         </button>
-        <button
-          className="u"
-          style={{ border: 'none', background: 'transparent', fontSize: 14, fontWeight: 700, color: 'var(--mute)', minHeight: 32 }}
-          onClick={demo}
-        >
+        <button className="btn2" onClick={demo}>
           예시 데이터로 둘러보기
         </button>
       </div>
