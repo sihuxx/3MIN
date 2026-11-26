@@ -18,9 +18,9 @@ export function PreventTabs({ on }: { on: PreventTab }) {
   return (
     <div style={{ paddingTop: 58 }}>
       <h1 className="pad" style={{ fontSize: 32 }}>예방</h1>
-      <div className="pad no-bar" role="tablist" style={{ display: 'flex', gap: 8, marginTop: 14, overflowX: 'auto', paddingBottom: 4 }}>
+      <div className="pad ptabs" role="tablist">
         {PTABS.map(([k, l, r]) => (
-          <button key={k} role="tab" aria-selected={on === k} className={'pill' + (on === k ? ' on' : '')} style={{ flex: 'none' }} onClick={() => go(r)}>
+          <button key={k} role="tab" aria-selected={on === k} className={'pill' + (on === k ? ' on' : '')} onClick={() => go(r)}>
             {l}
           </button>
         ))}

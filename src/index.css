@@ -123,3 +123,7 @@ input.field:focus { box-shadow: 0 0 0 2px var(--pri); }
   100% { opacity: 0; transform: translate(calc(-50% - 4px), -92px) scale(1.05); filter: blur(1.5px); }
 }
 @media (prefers-reduced-motion: reduce) { .smoke-word { animation: none; opacity: 1; } }
+.ptabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 14px; padding-bottom: 4px; }
+.ptabs .pill { padding: 0 4px; font-size: 14px; white-space: nowrap; letter-spacing: -0.02em; justify-content: center; }
+@media (max-width: 400px) { .ptabs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .ptabs { display: flex; } .ptabs .pill { padding: 0 18px; font-size: 15px; } }
