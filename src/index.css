@@ -64,7 +64,10 @@ button.tag.on::before { content: '✓'; font-weight: 900; }
 .pad { padding-left: 28px; padding-right: 28px; }
 .no-bar { scrollbar-width: none; }
 .no-bar::-webkit-scrollbar { display: none; }
-.ul-word { padding: 0; border: none; background: transparent; font-weight: 800; text-decoration: underline; text-decoration-color: var(--ac); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.ul-word { display: inline-flex; align-items: center; gap: 4px; padding: 0 10px 0 12px; margin: 2px 2px; border: none; border-radius: 12px; background: var(--tint); color: #A8460F; font-weight: 900; line-height: 1.5; box-shadow: inset 0 -3px 0 rgba(224,106,31,.18); vertical-align: baseline; transition: transform .08s, background .15s; }
+.ul-word::after { content: ''; width: 8px; height: 8px; border-right: 2.5px solid currentColor; border-bottom: 2.5px solid currentColor; transform: translateY(-3px) rotate(45deg); margin-left: 4px; }
+.ul-word:hover { background: #FAD9BD; }
+.ul-word:active { transform: translateY(2px); }
 .fade-in { animation: fade .35s ease both; }
 @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes rise { from { transform: translateY(0); } to { transform: translateY(-900px); } }
@@ -102,3 +105,20 @@ input.field:focus { box-shadow: 0 0 0 2px var(--pri); }
 @keyframes pulse { from { box-shadow: 0 0 0 0 rgba(224,106,31,.25); } to { box-shadow: 0 0 0 18px rgba(224,106,31,0); } }
 .shake { animation: shake .35s ease; }
 @keyframes shake { 0%,100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.chem { animation: chem .6s cubic-bezier(.3,.7,.3,1) both; }
+@keyframes chem { from { opacity: 0; transform: translateY(26px) scale(.7); } to { opacity: 1; transform: none; } }
+.burst { animation: burst 1.7s cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes burst { 0% { opacity: 0; transform: translateY(30px) scale(.5); } 15% { opacity: 1; transform: translateY(0) scale(1.1); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-70px) scale(1); } }
+.pulse-dot { animation: pdot 1.1s ease-in-out infinite; }
+@keyframes pdot { 0%,100% { box-shadow: 0 0 0 0 rgba(224,106,31,.45); } 50% { box-shadow: 0 0 0 12px rgba(224,106,31,0); } }
+.ring { transform-box: fill-box; transform-origin: center; animation: ring 1.4s ease-out infinite; }
+@keyframes ring { from { transform: scale(1); opacity: .5; } to { transform: scale(2.4); opacity: 0; } }
+.smoke-word { opacity: 0; animation-name: smoke; animation-timing-function: linear; animation-iteration-count: infinite; animation-fill-mode: both; }
+@keyframes smoke {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(.75); }
+  15% { opacity: 1; transform: translate(calc(-50% + 6px), -14px) scale(.9); }
+  45% { transform: translate(calc(-50% - 8px), -40px) scale(1); }
+  75% { opacity: .9; transform: translate(calc(-50% + 8px), -66px) scale(1); }
+  100% { opacity: 0; transform: translate(calc(-50% - 4px), -92px) scale(1.05); filter: blur(1.5px); }
+}
+@media (prefers-reduced-motion: reduce) { .smoke-word { animation: none; opacity: 1; } }

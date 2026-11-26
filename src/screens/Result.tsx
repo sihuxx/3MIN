@@ -33,7 +33,7 @@ export default function Result() {
 
   const again = () => {
     const ctx = { place: last?.place ?? '학교', mood: last?.mood ?? '스트레스', with: last?.with ?? '혼자' }
-    setSession({ before: saved?.after ?? 3, ...ctx, startedAt: Date.now(), missions: pickMissions(ctx), done: [], cur: 0, bubbles: 0 })
+    setSession({ before: saved?.after ?? 3, ...ctx, startedAt: Date.now(), missions: pickMissions(ctx, Math.random, session?.done ?? []), done: [], cur: 0, bubbles: 0 })
     go('hold')
   }
 

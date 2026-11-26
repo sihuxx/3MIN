@@ -44,6 +44,7 @@ export interface Data {
   holds: Hold[]
   settings: Settings
   breaths?: Breath[] // 숨 체크 기록
+  daily?: Record<string, { refuse?: boolean; fact?: boolean }> // 날짜별 오늘의 예방 완료
   bubbles: number // 미니게임에서 터뜨린 방울 누적
   refusals: number // 거절 연습에서 좋은 답을 고른 횟수
   quizBest: number
@@ -261,3 +262,21 @@ export function nextAlertAt(plan: DangerPlan, now = new Date()) {
   if (t <= now) t.setDate(t.getDate() + 1)
   return t
 }
+
+// 오늘의 예방(거절 연습 + 성분 카드)을 둘 다 한 날이 며칠 연속인지
+export function preventStreak(d: Data, now = new Date()) {
+  const done = (t: Date) => {
+    const x = d.daily?.[dayKey(t)]
+    return !!(x?.refuse && x?.fact)
+  }
+  const t = new Date(now)
+  if (!done(t)) t.setDate(t.getDate() - 1)
+  let n = 0
+  while (done(t)) {
+    n++
+    t.setDate(t.getDate() - 1)
+  }
+  return n
+}
+// 날짜로 정하는 '오늘의' 번호 (하루 동안 같은 문제)
+export const dayIndex = (now = new Date()) => Math.floor(startOfDay(now).getTime() / DAY)

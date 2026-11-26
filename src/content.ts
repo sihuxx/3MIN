@@ -32,9 +32,12 @@ export const MISSIONS: Mission[] = [
 export const missionById = (id: string) => MISSIONS.find((m) => m.id === id) ?? MISSIONS[0]
 
 // 지금 상황에 맞는 미션 3개 고르기
-export function pickMissions(ctx: { place: string; mood: string; with: string }, rand = Math.random) {
+export function pickMissions(ctx: { place: string; mood: string; with: string }, rand = Math.random, recent: string[] = []) {
   const score: Record<string, number> = {}
-  for (const m of MISSIONS) score[m.id] = rand() * 2
+  // 무작위 폭을 넉넉히 둬서 같은 상황이어도 매번 조금씩 다르게
+  for (const m of MISSIONS) score[m.id] = rand() * 5
+  // 지난번에 한 미션은 살짝 덜 나오게
+  recent.forEach((id) => score[id] !== undefined && (score[id] -= 2.5))
   const add = (ids: string[], n: number) => ids.forEach((id) => (score[id] += n))
   if (ctx.mood === '스트레스' || ctx.mood === '화남') add(['breath'], 6)
   if (ctx.mood === '심심함') add(['bubble', 'walk'], 4)
@@ -44,6 +47,7 @@ export function pickMissions(ctx: { place: string; mood: string; with: string },
   if (ctx.place === '집') add(['wash', 'gum', 'stretch'], 3)
   if (ctx.with === '친구') add(['reasons', 'breath'], 3)
   if (ctx.with === '혼자') add(['message', 'bubble'], 2)
+  if (ctx.with === '가족') add(['walk', 'reasons', 'water'], 2)
   const ranked = MISSIONS.map((m) => m.id).sort((a, b) => score[b] - score[a])
   // 같은 종류만 3개 나오지 않게
   const out: string[] = []
@@ -138,3 +142,60 @@ export const QUIZ: Quiz[] = [
   { q: '만 19세 미만에게\n담배를 파는 건\n법으로 금지돼 있다?', answer: true, why: '청소년보호법에서 담배를 청소년 유해약물로 정하고 있어' },
   { q: '담배를 끊고 1년이 지나면\n심장질환 위험이\n크게 줄어든다?', answer: true, why: '1년만 버텨도 심장이 훨씬 건강해져' },
 ]
+
+// 담배 종류별 '겉으로 하는 말' vs '실제로 들어있는 것'
+export const PRODUCTS = [
+  {
+    id: 'cig',
+    name: '일반 담배',
+    claim: '그냥 한 개비인데 뭐 어때',
+    facts: [
+      '담배에는 화학물질 7,000여 종, 발암물질 70여 종이 들어있어 (WHO 기준)',
+      '2026년 식약처 검사에서 모든 일반 담배 제품에서 포름알데히드·벤젠·카드뮴 같은 1급 발암물질이 나왔어',
+      '니코틴은 피우고 7초 만에 뇌에 도착해서 또 피우고 싶게 만들어',
+    ],
+    src: '식품의약품안전처(2026), 국민건강보험공단',
+  },
+  {
+    id: 'heat',
+    name: '궐련형 전자담배',
+    claim: '태우는 게 아니라 찌는 거라 덜 해롭대',
+    facts: [
+      '2018년 식약처 분석에서 니코틴은 일반 담배랑 비슷한 수준이었어',
+      '타르는 두 제품에서 9.1~9.3mg으로, 일반 담배(0.1~8.0mg)보다 높게 나왔어',
+      '벤젠·포름알데히드 같은 1급 발암물질도 나왔어. 식약처는 “덜 해롭다는 근거가 없다”고 했어',
+    ],
+    src: '식품의약품안전처 궐련형 전자담배 유해성분 분석(2018)',
+  },
+  {
+    id: 'vape',
+    name: '액상형 전자담배',
+    claim: '과일향 나는 수증기라 괜찮아',
+    facts: [
+      '들이마시는 건 수증기가 아니라 니코틴과 유해물질이 섞인 에어로졸이야',
+      '2026년 식약처 검사에서 105개 제품 중 99개에서 포름알데히드가 나왔고, 전 제품에서 니코틴이 확인됐어',
+      '과일·민트 향은 청소년이 쉽게 시작하게 만드는 장치로 꼽혀',
+    ],
+    src: '식품의약품안전처(2026), 질병관리청',
+  },
+]
+
+export const STUFF = [
+  { name: '일산화탄소', also: '자동차 배기가스', hurt: '피가 산소를 못 나르게 막아' },
+  { name: '니코틴', also: '살충제', hurt: '중독을 만들고 혈압·맥박을 올려' },
+  { name: '타르', also: '아스팔트', hurt: '발암물질이 뭉친 끈적한 담뱃진' },
+  { name: '벤젠', also: '휘발유', hurt: '1급 발암물질' },
+  { name: '포름알데히드', also: '포르말린', hurt: '방부제로 쓰는 1급 발암물질' },
+  { name: '카드뮴', also: '건전지', hurt: '중금속, 1급 발암물질' },
+]
+
+// 오늘의 성분 퀴즈: 이 물질은 또 어디에 들어있을까? (오답은 생활용품)
+const SAFE = ['우유', '치약', '샴푸', '보리차', '비누', '딸기잼']
+export function dailyFact(day: number) {
+  const x = STUFF[day % STUFF.length]
+  const a = SAFE[day % SAFE.length]
+  const b = SAFE[(day + 3) % SAFE.length]
+  const opts = [x.also, a, b]
+  const shift = day % 3
+  return { ...x, options: [...opts.slice(shift), ...opts.slice(0, shift)] }
+}

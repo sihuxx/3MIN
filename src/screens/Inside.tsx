@@ -3,52 +3,14 @@ import { useApp } from '../App'
 import { TabBar, useDesktop } from '../components/ui'
 import { sfx } from '../sfx'
 import { PreventTabs } from './Prevent'
+import { PRODUCTS, STUFF } from '../content'
+import { BodyMap, ProductArt, ThingArt } from '../components/InsideArt'
 
-// 담배 종류별 '겉으로 하는 말' vs '실제로 들어있는 것'
-const PRODUCTS = [
-  {
-    id: 'cig',
-    name: '일반 담배',
-    claim: '그냥 한 개비인데 뭐 어때',
-    facts: [
-      '담배에는 화학물질 7,000여 종, 발암물질 70여 종이 들어있어 (WHO 기준)',
-      '2026년 식약처 검사에서 모든 일반 담배 제품에서 포름알데히드·벤젠·카드뮴 같은 1급 발암물질이 나왔어',
-      '니코틴은 피우고 7초 만에 뇌에 도착해서 또 피우고 싶게 만들어',
-    ],
-    src: '식품의약품안전처(2026), 국민건강보험공단',
-  },
-  {
-    id: 'heat',
-    name: '궐련형 전자담배',
-    claim: '태우는 게 아니라 찌는 거라 덜 해롭대',
-    facts: [
-      '2018년 식약처 분석에서 니코틴은 일반 담배랑 비슷한 수준이었어',
-      '타르는 두 제품에서 9.1~9.3mg으로, 일반 담배(0.1~8.0mg)보다 높게 나왔어',
-      '벤젠·포름알데히드 같은 1급 발암물질도 나왔어. 식약처는 “덜 해롭다는 근거가 없다”고 했어',
-    ],
-    src: '식품의약품안전처 궐련형 전자담배 유해성분 분석(2018)',
-  },
-  {
-    id: 'vape',
-    name: '액상형 전자담배',
-    claim: '과일향 나는 수증기라 괜찮아',
-    facts: [
-      '들이마시는 건 수증기가 아니라 니코틴과 유해물질이 섞인 에어로졸이야',
-      '2026년 식약처 검사에서 105개 제품 중 99개에서 포름알데히드가 나왔고, 전 제품에서 니코틴이 확인됐어',
-      '과일·민트 향은 청소년이 쉽게 시작하게 만드는 장치로 꼽혀',
-    ],
-    src: '식품의약품안전처(2026), 질병관리청',
-  },
-]
-
-const STUFF = [
-  { name: '일산화탄소', also: '자동차 배기가스', hurt: '피가 산소를 못 나르게 막아' },
-  { name: '니코틴', also: '중독을 만드는 물질', hurt: '혈압이랑 맥박을 올려' },
-  { name: '타르', also: '끈적한 담뱃진', hurt: '발암물질이 뭉친 덩어리' },
-  { name: '벤젠', also: '휘발유', hurt: '1급 발암물질' },
-  { name: '포름알데히드', also: '포르말린(방부제)', hurt: '1급 발암물질' },
-  { name: '카드뮴', also: '배터리 원료 중금속', hurt: '1급 발암물질' },
-]
+const CHEMS: Record<string, string[]> = {
+  cig: ['니코틴', '타르', '일산화탄소', '벤젠', '카드뮴'],
+  heat: ['니코틴', '타르', '벤젠', '포름알데히드'],
+  vape: ['니코틴', '포름알데히드', '프로필렌글리콜'],
+}
 
 export default function Inside() {
   const { go } = useApp()
@@ -64,6 +26,7 @@ export default function Inside() {
           <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--deep)' }}>{p.name}</span>
           {on && <span className="cap">속</span>}
         </div>
+        <ProductArt id={p.id} open={on} chems={CHEMS[p.id]} onTap={() => !on && setOpen((o) => ({ ...o, [p.id]: true }))} />
         {!on ? (
           <div key="front" className="flip-in">
             <p style={{ fontSize: 21, fontWeight: 900, lineHeight: 1.4, marginTop: 10 }}>“{p.claim}”</p>
@@ -114,17 +77,23 @@ export default function Inside() {
                 sfx.step()
               }}
               aria-pressed={on}
-              style={{ border: 'none', textAlign: 'left', borderRadius: 18, padding: '14px 14px 12px', minHeight: 92, background: on ? 'var(--tint)' : 'var(--card)', boxShadow: 'inset 0 -3px 0 rgba(59,42,32,.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+              style={{ border: 'none', textAlign: 'left', borderRadius: 18, padding: '14px 14px 12px', minHeight: 148, background: on ? 'var(--tint)' : 'var(--card)', boxShadow: 'inset 0 -3px 0 rgba(59,42,32,.06)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
             >
               <span style={{ fontSize: 16, fontWeight: 900 }}>{x.name}</span>
               {on ? (
-                <span className="flip-in" style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: '#5C4636' }}>
-                  <b style={{ color: 'var(--deep)' }}>{x.also}</b>에도 있는 것
-                  <br />
-                  {x.hurt}
+                <span className="flip-in" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <ThingArt name={x.name} size={52} />
+                  <span style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: '#5C4636' }}>
+                    <b style={{ color: 'var(--deep)' }}>{x.also}</b>에도 있는 것
+                    <br />
+                    {x.hurt}
+                  </span>
                 </span>
               ) : (
-                <span className="cap">어디에 쓰일까?</span>
+                <span style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <span style={{ width: 52, height: 52, borderRadius: 16, background: 'var(--tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: 'var(--ac)' }}>?</span>
+                  <span className="cap">어디에 쓰일까?</span>
+                </span>
               )}
             </button>
           )
@@ -147,7 +116,11 @@ export default function Inside() {
       <PreventTabs on="inside" />
       {desk ? (
         <div className="desk-grid" style={{ marginTop: 28 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{cards}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <BodyMap />
+            <div style={{ height: 8 }} />
+            {cards}
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {stuff}
             {bottom}
@@ -155,6 +128,8 @@ export default function Inside() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '22px 20px 28px' }}>
+          <BodyMap />
+          <h2 style={{ fontSize: 18, marginTop: 18 }}>담배 속 까보기</h2>
           {cards}
           <div style={{ marginTop: 14 }}>{stuff}</div>
           <div style={{ marginTop: 8 }}>{bottom}</div>

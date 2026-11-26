@@ -17,7 +17,7 @@ export default function Check() {
   const [open, setOpen] = useState<Field | null>(null)
   const desk = useDesktop()
   // 상황이 바뀔 때마다 이번 미션 3개를 다시 고름
-  const missions = useMemo(() => pickMissions(ctx), [ctx])
+  const missions = useMemo(() => pickMissions(ctx, Math.random, data.holds[data.holds.length - 1]?.missions ?? []), [ctx]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const start = () => {
     sfx.start()

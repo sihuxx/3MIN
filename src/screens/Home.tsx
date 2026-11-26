@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useApp } from '../App'
 import { DangerCard, DangerSheet } from '../components/Danger'
+import { FactToday, RefuseToday, TodayHead } from '../components/Today'
 import Mascot from '../components/Mascot'
 import { TabBar, useDesktop } from '../components/ui'
 import { dangerPlan, dayCount, savedMoney, won } from '../store'
@@ -42,6 +43,13 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            {!quit ? (
+              <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <TodayHead />
+                <RefuseToday />
+                <FactToday />
+              </div>
+            ) : (<>
             <h2 style={{ marginTop: 48, fontSize: 18 }}>최근 버틴 기록</h2>
             <div style={{ marginTop: 10 }}>
               {recent.length === 0 && <p style={{ fontSize: 15, color: 'var(--mute)', marginTop: 8 }}>아직 기록이 없어. 생각나면 SOS를 눌러봐</p>}
@@ -60,6 +68,7 @@ export default function Home() {
                 )
               })}
             </div>
+            </>)}
           </div>
           <div style={{ position: 'relative', minHeight: 600, background: 'var(--tint)', borderRadius: 44, overflow: 'hidden' }}>
             <button
@@ -93,6 +102,44 @@ export default function Home() {
       </div>
     )
   }
+
+  if (!quit)
+    return (
+      <div className="screen with-tab">
+        <div className="pad fade-in" style={{ paddingTop: short ? 26 : 50 }}>
+          <p className="cap">{dateText}</p>
+          <h1 style={{ marginTop: 8, fontSize: 30, lineHeight: 1.25 }}>
+            {p?.nickname ?? '친구'},<br />
+            <span style={{ color: 'var(--ac)' }}>{days}일째</span> 지키는 중
+          </h1>
+          <p style={{ marginTop: 10, fontSize: 15, color: '#5C4636' }}>
+            거절 연습 <b style={{ color: 'var(--ink)' }}>{data.refusals}번</b> 성공
+          </p>
+        </div>
+        <div className="fade-in" style={{ padding: '22px 20px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <TodayHead />
+          <RefuseToday />
+          <FactToday />
+        </div>
+        <button
+          onClick={() => go('check')}
+          aria-label="SOS, 담배 생각날 때 누르기"
+          style={{ margin: '18px 20px 22px', border: 'none', borderRadius: 26, background: 'var(--tint)', padding: '14px 18px 14px 14px', display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left' }}
+        >
+          <span style={{ width: 76, height: 76, flex: 'none', borderRadius: 38, background: 'var(--ac)', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 -4px 0 rgba(0,0,0,.14)' }}>
+            <span style={{ fontSize: 22, fontWeight: 900, lineHeight: 1 }}>SOS</span>
+            <span style={{ fontSize: 11, fontWeight: 800, marginTop: 2 }}>3분만</span>
+          </span>
+          <span style={{ flex: 1 }}>
+            <span style={{ display: 'block', fontSize: 16, fontWeight: 900 }}>궁금하거나 권유받을 때</span>
+            <span style={{ display: 'block', fontSize: 14, fontWeight: 600, color: '#5C4636', marginTop: 3 }}>호롱이랑 3분만 같이 버티자</span>
+          </span>
+          <Mascot mood="happy" size={58} />
+        </button>
+        <TabBar on="home" go={go} />
+        {sheet}
+      </div>
+    )
 
   return (
     <div className="screen">
